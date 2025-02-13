@@ -1,4 +1,4 @@
-import { Context, createContext, useState } from "react";
+import React, { Context, createContext, useState } from "react";
 import { User, AuthToken } from "tweeter-shared";
 
 const CURRENT_USER_KEY: string = "CurrentUserKey";
@@ -15,7 +15,8 @@ interface UserInfo {
     remember: boolean
   ) => void;
   clearUserInfo: () => void;
-  setDisplayedUser: (user: User) => void
+  setDisplayedUser: (user: User) => void;
+  userNavigationHook: (event: React.MouseEvent) => Promise<void> | null;
 }
 
 const defaultUserInfo: UserInfo = {
@@ -29,7 +30,8 @@ const defaultUserInfo: UserInfo = {
     remember: boolean = false
   ) => null,
   clearUserInfo: () => null,
-  setDisplayedUser: (user) => null
+  setDisplayedUser: (user) => null,
+  userNavigationHook: (event: React.MouseEvent) => null
 };
 
 export const UserInfoContext: Context<UserInfo> =

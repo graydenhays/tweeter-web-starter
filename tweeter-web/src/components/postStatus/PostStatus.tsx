@@ -35,6 +35,8 @@ const PostStatus = () => {
     }
   };
 
+  // method below needs to be in the service folder!!! even hooks can need the mvp
+
   const postStatus = async (
     authToken: AuthToken,
     newStatus: Status
