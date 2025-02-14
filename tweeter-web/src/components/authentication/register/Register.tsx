@@ -8,6 +8,7 @@ import { Buffer } from "buffer";
 import useToastListener from "../../toaster/ToastListenerHook";
 import AuthenticationFields from "../AuthenticationFields";
 import userInfoHook from "../../userInfo/UserInfoHook";
+import { RegisterPresenter, RegisterView } from "../../../presenters/RegisterPresenter";
 
 const Register = () => {
   const [firstName, setFirstName] = useState("");
@@ -82,50 +83,24 @@ const Register = () => {
     return file.name.split(".").pop();
   };
 
+  const listener: RegisterView = {
+    updateUserInfo: updateUserInfo,
+    displayErrorMessage: displayErrorMessage,
+    alias: alias,
+    password: password,
+    rememberMe: rememberMe,
+    firstName: firstName,
+    lastName: lastName,
+    imageBytes: imageBytes,
+    imageFileExtension: imageFileExtension
+  }
+
+  const presenter = new RegisterPresenter(listener);
+
   const doRegister = async () => {
-    try {
-      setIsLoading(true);
-
-      const [user, authToken] = await register(
-        firstName,
-        lastName,
-        alias,
-        password,
-        imageBytes,
-        imageFileExtension
-      );
-
-      updateUserInfo(user, user, authToken, rememberMe);
-      navigate("/");
-    } catch (error) {
-      displayErrorMessage(
-        `Failed to register user because of exception: ${error}`
-      );
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const register = async (
-    firstName: string,
-    lastName: string,
-    alias: string,
-    password: string,
-    userImageBytes: Uint8Array,
-    imageFileExtension: string
-  ): Promise<[User, AuthToken]> => {
-    // Not neded now, but will be needed when you make the request to the server in milestone 3
-    const imageStringBase64: string =
-      Buffer.from(userImageBytes).toString("base64");
-
-    // TODO: Replace with the result of calling the server
-    const user = FakeData.instance.firstUser;
-
-    if (user === null) {
-      throw new Error("Invalid registration");
-    }
-
-    return [user, FakeData.instance.authToken];
+    setIsLoading(true);
+    presenter.doRegister();
+    setIsLoading(false);
   };
 
   const inputFieldGenerator = () => {
