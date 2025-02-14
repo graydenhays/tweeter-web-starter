@@ -1,15 +1,16 @@
 import "./Login.css";
 import "bootstrap/dist/css/bootstrap.css";
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import AuthenticationFormLayout from "../AuthenticationFormLayout";
-import { AuthToken, FakeData, User } from "tweeter-shared";
 import useToastListener from "../../toaster/ToastListenerHook";
 import AuthenticationFields from "../AuthenticationFields";
 import userInfoHook from "../../userInfo/UserInfoHook";
+import { LoginPresenter, LoginView } from "../../../presenters/LoginPresenter";
 
 interface Props {
   originalUrl?: string;
+  presenterGenerator: (view: LoginView) => LoginPresenter;
 }
 
 const Login = (props: Props) => {
@@ -18,7 +19,6 @@ const Login = (props: Props) => {
   const [rememberMe, setRememberMe] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
-  const navigate = useNavigate();
   const { updateUserInfo } = userInfoHook();
   const { displayErrorMessage } = useToastListener();
 
@@ -32,41 +32,22 @@ const Login = (props: Props) => {
     }
   };
 
-  const doLogin = async () => {
-    try {
-      setIsLoading(true);
+  const listener: LoginView = {
+    updateUserInfo: updateUserInfo,
+    displayErrorMessage: displayErrorMessage,
+    originalUrl: props.originalUrl,
+    alias: alias,
+    password: password,
+    rememberMe: rememberMe
+  }
 
-      const [user, authToken] = await login(alias, password);
+  const [presenter] = useState(props.presenterGenerator(listener));
 
-      updateUserInfo(user, user, authToken, rememberMe);
-
-      if (!!props.originalUrl) {
-        navigate(props.originalUrl);
-      } else {
-        navigate("/");
-      }
-    } catch (error) {
-      displayErrorMessage(
-        `Failed to log user in because of exception: ${error}`
-      );
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const login = async (
-    alias: string,
-    password: string
-  ): Promise<[User, AuthToken]> => {
-    // TODO: Replace with the result of calling the server
-    const user = FakeData.instance.firstUser;
-
-    if (user === null) {
-      throw new Error("Invalid alias or password");
-    }
-
-    return [user, FakeData.instance.authToken];
-  };
+  const doLogin = () => {
+    setIsLoading(true);
+    presenter.doLogin();
+    setIsLoading(false);
+  }
 
   const inputFieldGenerator = () => {
     return (
