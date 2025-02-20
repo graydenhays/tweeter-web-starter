@@ -47,6 +47,7 @@ const Register = () => {
     handleImageFile(file);
   };
 
+  // put in registerPresenter
   const handleImageFile = (file: File | undefined) => {
     if (file) {
       setImageUrl(URL.createObjectURL(file));
@@ -79,6 +80,7 @@ const Register = () => {
     }
   };
 
+  // put in presenter
   const getFileExtension = (file: File): string | undefined => {
     return file.name.split(".").pop();
   };
@@ -99,6 +101,7 @@ const Register = () => {
 
   const doRegister = async () => {
     setIsLoading(true);
+    // move parameters from view here
     presenter.doRegister();
     setIsLoading(false);
   };

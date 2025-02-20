@@ -1,6 +1,7 @@
 import { AuthToken, FakeData, Status } from "tweeter-shared";
 
 export class StatusService {
+	// separate into feed and story functions
 	public async loadMoreStatusItems(
 		authToken: AuthToken,
 		userAlias: string,
