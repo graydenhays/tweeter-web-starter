@@ -2,7 +2,7 @@ import { AuthToken, User } from "tweeter-shared";
 import { FollowService } from "../model/service/FollowService";
 import { DisplayedUserPresenter, DisplayedUserView } from "./DisplayUserPresenter";
 
-export class UnfollowDisplayedUserPresenter  extends DisplayedUserPresenter{
+export class UnfollowDisplayedUserPresenter  extends DisplayedUserPresenter {
 	private followService: FollowService;
 
 	public constructor(view: DisplayedUserView) {
@@ -16,29 +16,23 @@ export class UnfollowDisplayedUserPresenter  extends DisplayedUserPresenter{
 		displayedUser: User | null
 	): Promise<void> {
 		event.preventDefault();
-
-		try {
-		  this.view.setIsLoading(true);
-		  this.view.displayInfoMessage(
+		this.doFailureReportingOperation(async () => {
+			this.view.setIsLoading(true);
+			this.view.displayInfoMessage(
 			`Unfollowing ${displayedUser!.name}...`,
 			0
-		  );
+			);
 
-		  const [followerCount, followeeCount] = await this.followService.unfollow(
+			const [followerCount, followeeCount] = await this.followService.unfollow(
 			authToken!,
 			displayedUser!
-		  );
+			);
 
-		  this.view.setIsFollower(false);
-		  this.view.setFollowerCount(followerCount);
-		  this.view.setFolloweeCount(followeeCount);
-		} catch (error) {
-		  this.view.displayErrorMessage(
-			`Failed to unfollow user because of exception: ${error}`
-		  );
-		} finally {
-		  this.view.clearLastInfoMessage();
-		  this.view.setIsLoading(false);
-		}
+			this.view.setIsFollower(false);
+			this.view.setFollowerCount(followerCount);
+			this.view.setFolloweeCount(followeeCount);
+		}, "unfollow user");
+		this.view.clearLastInfoMessage();
+		this.view.setIsLoading(false);
 	};
 }

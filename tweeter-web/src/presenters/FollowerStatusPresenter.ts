@@ -1,18 +1,21 @@
 import { AuthToken, User } from "tweeter-shared";
 import { FollowService } from "../model/service/FollowService";
+import { Presenter, View } from "./Presenter";
 
-export interface FollowerStatusView {
+export interface FollowerStatusView extends View {
 	setIsFollower: (value: React.SetStateAction<boolean>) => void
-	displayErrorMessage: (message: string, bootstrapClasses?: string) => void
 }
 
-export class FollowerStatusPresenter {
-	private view: FollowerStatusView;
+export class FollowerStatusPresenter extends Presenter {
 	private followService: FollowService;
 
 	public constructor(view: FollowerStatusView) {
-		this.view = view;
+		super(view)
 		this.followService = new FollowService();
+	}
+
+	protected get view(): FollowerStatusView {
+		return super.view as FollowerStatusView;
 	}
 
 	public async setIsFollowerStatus(
@@ -20,19 +23,15 @@ export class FollowerStatusPresenter {
 		currentUser: User,
 		displayedUser: User
 	  ) {
-		try {
-		  if (currentUser === displayedUser) {
-			this.view.setIsFollower(false);
-		  } else {
-			this.view.setIsFollower(
-			  await this.followService.getIsFollowerStatus(authToken!, currentUser!, displayedUser!)
-			);
-		  }
-		} catch (error) {
-		  this.view.displayErrorMessage(
-			`Failed to determine follower status because of exception: ${error}`
-		  );
-		}
+		this.doFailureReportingOperation(async () => {
+			if (currentUser === displayedUser) {
+				this.view.setIsFollower(false);
+			} else {
+				this.view.setIsFollower(
+					await this.followService.getIsFollowerStatus(authToken!, currentUser!, displayedUser!)
+				);
+			}
+		}, "determine follower status");
 	};
 
 

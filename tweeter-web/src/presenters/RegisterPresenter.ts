@@ -2,28 +2,31 @@ import { AuthToken, User } from "tweeter-shared";
 import { UserService } from "../model/service/UserService";
 import { NavigateFunction, useNavigate } from "react-router-dom";
 import { Buffer } from "buffer";
+import { Presenter, View } from "./Presenter";
 
-export interface RegisterView {
+export interface RegisterView extends View {
 	updateUserInfo: (
 		user: User,
 		user2: User,
 		authToken: AuthToken,
 		rememberMe: boolean
 	) => void
-	displayErrorMessage: (message: string) => void
 	setImageUrl: React.Dispatch<React.SetStateAction<string>>
 	setImageBytes: React.Dispatch<React.SetStateAction<Uint8Array>>
 	setImageFileExtension: React.Dispatch<React.SetStateAction<string>>
 }
 
-export class RegisterPresenter {
+export class RegisterPresenter extends Presenter {
 	private userService: UserService;
-	private view: RegisterView;
 	private navigate: NavigateFunction = useNavigate();
 
 	public constructor(view: RegisterView) {
-		this.view = view;
+		super(view);
 		this.userService = new UserService();
+	}
+
+	protected get view(): RegisterView {
+		return super.view as RegisterView;
 	}
 
 	public async doRegister(
@@ -35,23 +38,19 @@ export class RegisterPresenter {
 		imageBytes: Uint8Array,
 		imageFileExtension: string
 	) {
-		try {
-		  const [user, authToken] = await this.userService.register(
-			firstName,
-			lastName,
-			alias,
-			password,
-			imageBytes,
-			imageFileExtension
-		  );
+		this.doFailureReportingOperation(async () => {
+			const [user, authToken] = await this.userService.register(
+				firstName,
+				lastName,
+				alias,
+				password,
+				imageBytes,
+				imageFileExtension
+			);
 
-		  this.view.updateUserInfo(user, user, authToken, rememberMe);
-		  this.navigate("/");
-		} catch (error) {
-		  this.view.displayErrorMessage(
-			`Failed to register user because of exception: ${error}`
-		  );
-		}
+			this.view.updateUserInfo(user, user, authToken, rememberMe);
+			this.navigate("/");
+		}, "register user");
 	};
 
 	public handleImageFile (file: File | undefined) {

@@ -1,21 +1,22 @@
 import { AuthToken, Status, User } from "tweeter-shared";
 import { StatusService } from "../model/service/StatusService";
+import { MessageView, Presenter } from "./Presenter";
 
-export interface PostStatusView {
+export interface PostStatusView extends MessageView {
 	setIsLoading: (value: React.SetStateAction<boolean>) => void
-	displayInfoMessage: (message: string, duration: number, bootstrapClasses?: string) => void
 	setPost: React.Dispatch<React.SetStateAction<string>>
-	displayErrorMessage: (message: string, bootstrapClasses?: string) => void
-	clearLastInfoMessage: () => void
 }
 
-export class PostStatusPresenter {
-	private view: PostStatusView;
+export class PostStatusPresenter extends Presenter {
 	private statusService: StatusService;
 
 	public constructor(view: PostStatusView) {
-		this.view = view;
+		super(view);
 		this.statusService = new StatusService();
+	}
+
+	protected get view(): PostStatusView {
+		return super.view as PostStatusView;
 	}
 
 	public async submitPost (
@@ -25,24 +26,18 @@ export class PostStatusPresenter {
 		post: string
 	) {
 		event.preventDefault();
+		this.doFailureReportingOperation(async () => {
+			this.view.setIsLoading(true);
+			this.view.displayInfoMessage("Posting status...", 0);
 
-		try {
-		  this.view.setIsLoading(true);
-		  this.view.displayInfoMessage("Posting status...", 0);
+			const status = new Status(post, currentUser!, Date.now());
 
-		  const status = new Status(post, currentUser!, Date.now());
+			await this.statusService.postStatus(authToken!, status);
 
-		  await this.statusService.postStatus(authToken!, status);
-
-		  this.view.setPost("");
-		  this.view.displayInfoMessage("Status posted!", 2000);
-		} catch (error) {
-		  this.view.displayErrorMessage(
-			`Failed to post the status because of exception: ${error}`
-		  );
-		} finally {
-		  this.view.clearLastInfoMessage();
-		  this.view.setIsLoading(false);
-		}
+			this.view.setPost("");
+			this.view.displayInfoMessage("Status posted!", 2000);
+		}, "post the status");
+		this.view.clearLastInfoMessage();
+		this.view.setIsLoading(false);
 	};
 }
