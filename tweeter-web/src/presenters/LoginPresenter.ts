@@ -12,17 +12,13 @@ export interface LoginView extends View {
 	) => void
 }
 
-export class LoginPresenter extends Presenter {
+export class LoginPresenter extends Presenter<LoginView> {
 	private navigate: NavigateFunction = useNavigate();
 	private userService: UserService;
 
 	public constructor(view: LoginView) {
 		super(view);
 		this.userService = new UserService();
-	}
-
-	protected get view(): LoginView {
-		return super.view as LoginView;
 	}
 
 	public async doLogin(

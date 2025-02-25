@@ -6,17 +6,13 @@ export interface FollowerCountView extends View {
 	setFollowerCount: (value: React.SetStateAction<number>) => void
 }
 
-export class FollowerCountPresenter extends Presenter {
+export class FollowerCountPresenter extends Presenter<FollowerCountView> {
 
 	private followService: FollowService;
 
 	public constructor(view: FollowerCountView) {
 		super(view);
 		this.followService = new FollowService();
-	}
-
-	protected get view(): FollowerCountView {
-		return super.view as FollowerCountView;
 	}
 
 	public async setNumbFollowers(

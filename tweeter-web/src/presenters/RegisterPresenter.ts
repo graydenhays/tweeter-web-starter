@@ -16,17 +16,13 @@ export interface RegisterView extends View {
 	setImageFileExtension: React.Dispatch<React.SetStateAction<string>>
 }
 
-export class RegisterPresenter extends Presenter {
+export class RegisterPresenter extends Presenter<RegisterView> {
 	private userService: UserService;
 	private navigate: NavigateFunction = useNavigate();
 
 	public constructor(view: RegisterView) {
 		super(view);
 		this.userService = new UserService();
-	}
-
-	protected get view(): RegisterView {
-		return super.view as RegisterView;
 	}
 
 	public async doRegister(

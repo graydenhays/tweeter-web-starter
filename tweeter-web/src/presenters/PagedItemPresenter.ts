@@ -7,7 +7,7 @@ export interface PagedItemView<T> extends View {
 	addItems: (newItems: T[]) => void
 }
 
-export abstract class PagedItemPresenter<T, U> extends Presenter {
+export abstract class PagedItemPresenter<T, U> extends Presenter<PagedItemView<T>> {
 	private _lastItem: T | null = null;
 	private _hasMoreItems = true;
 	private _service: U;
@@ -21,10 +21,6 @@ export abstract class PagedItemPresenter<T, U> extends Presenter {
 
 	protected get service() {
 		return this._service;
-	}
-
-	protected get view(): PagedItemView<T> {
-		return super.view as PagedItemView<T>;
 	}
 
 	public get hasMoreItems(): boolean {

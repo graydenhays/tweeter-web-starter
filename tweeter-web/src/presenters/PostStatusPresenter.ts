@@ -7,16 +7,12 @@ export interface PostStatusView extends MessageView {
 	setPost: React.Dispatch<React.SetStateAction<string>>
 }
 
-export class PostStatusPresenter extends Presenter {
+export class PostStatusPresenter extends Presenter<PostStatusView> {
 	private statusService: StatusService;
 
 	public constructor(view: PostStatusView) {
 		super(view);
 		this.statusService = new StatusService();
-	}
-
-	protected get view(): PostStatusView {
-		return super.view as PostStatusView;
 	}
 
 	public async submitPost (

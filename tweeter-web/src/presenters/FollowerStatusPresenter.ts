@@ -6,16 +6,12 @@ export interface FollowerStatusView extends View {
 	setIsFollower: (value: React.SetStateAction<boolean>) => void
 }
 
-export class FollowerStatusPresenter extends Presenter {
+export class FollowerStatusPresenter extends Presenter<FollowerStatusView> {
 	private followService: FollowService;
 
 	public constructor(view: FollowerStatusView) {
 		super(view)
 		this.followService = new FollowService();
-	}
-
-	protected get view(): FollowerStatusView {
-		return super.view as FollowerStatusView;
 	}
 
 	public async setIsFollowerStatus(
