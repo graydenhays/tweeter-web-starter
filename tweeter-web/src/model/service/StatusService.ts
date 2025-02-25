@@ -1,8 +1,7 @@
 import { AuthToken, FakeData, Status } from "tweeter-shared";
 
 export class StatusService {
-	// separate into feed and story functions
-	public async loadMoreStatusItems(
+	public async loadMoreStoryItems(
 		authToken: AuthToken,
 		userAlias: string,
 		pageSize: number,
@@ -12,6 +11,15 @@ export class StatusService {
 		return FakeData.instance.getPageOfStatuses(lastItem, pageSize);
 	};
 
+	public async loadMoreFeedItems(
+		authToken: AuthToken,
+		userAlias: string,
+		pageSize: number,
+		lastItem: Status | null
+	): Promise<[Status[], boolean]> {
+		// TODO: Replace with the result of calling server
+		return FakeData.instance.getPageOfStatuses(lastItem, pageSize);
+	};
 
 	// method below needs to be in the service folder!!! even hooks can need the mvp
 	public async postStatus(

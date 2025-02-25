@@ -1,10 +1,8 @@
 import "./Register.css";
 import "bootstrap/dist/css/bootstrap.css";
 import { ChangeEvent, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import AuthenticationFormLayout from "../AuthenticationFormLayout";
-import { AuthToken, FakeData, User } from "tweeter-shared";
-import { Buffer } from "buffer";
 import useToastListener from "../../toaster/ToastListenerHook";
 import AuthenticationFields from "../AuthenticationFields";
 import userInfoHook from "../../userInfo/UserInfoHook";
@@ -21,7 +19,6 @@ const Register = () => {
   const [rememberMe, setRememberMe] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
-  const navigate = useNavigate();
   const { updateUserInfo } = userInfoHook();
   const { displayErrorMessage } = useToastListener();
 
@@ -44,65 +41,30 @@ const Register = () => {
 
   const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
-    handleImageFile(file);
-  };
-
-  // put in registerPresenter
-  const handleImageFile = (file: File | undefined) => {
-    if (file) {
-      setImageUrl(URL.createObjectURL(file));
-
-      const reader = new FileReader();
-      reader.onload = (event: ProgressEvent<FileReader>) => {
-        const imageStringBase64 = event.target?.result as string;
-
-        // Remove unnecessary file metadata from the start of the string.
-        const imageStringBase64BufferContents =
-          imageStringBase64.split("base64,")[1];
-
-        const bytes: Uint8Array = Buffer.from(
-          imageStringBase64BufferContents,
-          "base64"
-        );
-
-        setImageBytes(bytes);
-      };
-      reader.readAsDataURL(file);
-
-      // Set image file extension (and move to a separate method)
-      const fileExtension = getFileExtension(file);
-      if (fileExtension) {
-        setImageFileExtension(fileExtension);
-      }
-    } else {
-      setImageUrl("");
-      setImageBytes(new Uint8Array());
-    }
-  };
-
-  // put in presenter
-  const getFileExtension = (file: File): string | undefined => {
-    return file.name.split(".").pop();
+    presenter.handleImageFile(file);
   };
 
   const listener: RegisterView = {
     updateUserInfo: updateUserInfo,
     displayErrorMessage: displayErrorMessage,
-    alias: alias,
-    password: password,
-    rememberMe: rememberMe,
-    firstName: firstName,
-    lastName: lastName,
-    imageBytes: imageBytes,
-    imageFileExtension: imageFileExtension
+    setImageUrl: setImageUrl,
+    setImageBytes: setImageBytes,
+    setImageFileExtension: setImageFileExtension
   }
 
   const presenter = new RegisterPresenter(listener);
 
   const doRegister = async () => {
     setIsLoading(true);
-    // move parameters from view here
-    presenter.doRegister();
+    presenter.doRegister(
+      alias,
+      password,
+      rememberMe,
+      firstName,
+      lastName,
+      imageBytes,
+      imageFileExtension
+    );
     setIsLoading(false);
   };
 
@@ -156,7 +118,7 @@ const Register = () => {
   const switchAuthenticationMethodGenerator = () => {
     return (
       <div className="mb-3">
-        Algready registered? <Link to="/login">Sign in</Link>
+        Already registered? <Link to="/login">Sign in</Link>
       </div>
     );
   };

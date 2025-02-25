@@ -1,5 +1,6 @@
 import { AuthToken, User } from "tweeter-shared";
 import { NavigateFunction, useNavigate } from "react-router-dom";
+import { UserService } from "../model/service/UserService";
 
 export interface LoginView {
 	updateUserInfo: (
@@ -9,27 +10,38 @@ export interface LoginView {
 		rememberMe: boolean
 	) => void
 	displayErrorMessage: (message: string) => void
-	originalUrl: string | undefined
-	alias: string
-	password: string
-	rememberMe: boolean
 }
 
-export abstract class LoginPresenter {
-	private _view: LoginView;
-	private _navigate: NavigateFunction = useNavigate();
+export class LoginPresenter {
+	private view: LoginView;
+	private navigate: NavigateFunction = useNavigate();
+	private userService: UserService;
 
 	public constructor(view: LoginView) {
-		this._view = view;
+		this.view = view;
+		this.userService = new UserService();
 	}
 
-	protected get view() {
-		return this._view
-	}
+	public async doLogin(
+		originalUrl: string | undefined,
+		alias: string,
+		password: string,
+		rememberMe: boolean
+	) {
+		try {
+			const [user, authToken] = await this.userService.login(alias, password);
 
-	protected get navigate() {
-		return this._navigate;
-	}
-
-	public abstract doLogin(): void;
+			this.view.updateUserInfo(user, user, authToken, rememberMe);
+			if (originalUrl) {
+				this.navigate(originalUrl!);
+			}
+			else {
+				this.navigate("/");
+			}
+		} catch (error) {
+			this.view.displayErrorMessage(
+				`Failed to log user in because of exception: ${error}`
+			);
+		}
+	};
 }
