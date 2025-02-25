@@ -10,8 +10,6 @@ import Login from "./components/authentication/login/Login";
 import Register from "./components/authentication/register/Register";
 import MainLayout from "./components/mainLayout/MainLayout";
 import Toaster from "./components/toaster/Toaster";
-import StatusItemScroller from "./components/mainLayout/StatusItemScroller";
-import UserItemScroller from "./components/mainLayout/UserItemScroller";
 import userInfoHook from "./components/userInfo/UserInfoHook";
 import { FolloweePresenter } from "./presenters/FolloweePresenter";
 import { UserItemView } from "./presenters/UserItemPresenter";
@@ -19,7 +17,12 @@ import { FollowerPresenter } from "./presenters/FollowerPresenter";
 import { FeedPresenter } from "./presenters/FeedPresenter";
 import { StatusItemView } from "./presenters/StatusItemPresenter";
 import { StoryPresenter } from "./presenters/StoryPresenter";
-import { LoginPresenter, LoginView } from "./presenters/LoginPresenter";
+import { LoginPresenter } from "./presenters/LoginPresenter";
+import { AuthView } from "./presenters/Presenter";
+import UserItem from "./components/userItem/UserItem";
+import StatusItem from "./components/statusItem/StatusItem";
+import ItemScroller from "./components/mainLayout/ItemScroller";
+import { Status, User } from "tweeter-shared";
 
 const App = () => {
   const { currentUser, authToken } = userInfoHook();
@@ -50,36 +53,40 @@ const AuthenticatedRoutes = () => {
         <Route
           path="feed"
           element={
-            <StatusItemScroller
+            <ItemScroller
               key={1}
               presenterGenerator={(view: StatusItemView) => new FeedPresenter(view)}
+              itemComponent={(value: Status) => <StatusItem status={value}/>}
             />
           }
         />
         <Route
           path="story"
           element={
-            <StatusItemScroller
+            <ItemScroller
               key={2}
               presenterGenerator={(view: StatusItemView) => new StoryPresenter(view)}
+              itemComponent={(value: Status) => <StatusItem status={value}/>}
             />
           }
         />
         <Route
           path="followees"
           element={
-            <UserItemScroller
+            <ItemScroller
               key={3}
               presenterGenerator={(view: UserItemView) => new FolloweePresenter(view)}
+              itemComponent={(value: User) => <UserItem value={value}/>}
             />
           }
         />
         <Route
           path="followers"
           element={
-            <UserItemScroller
+            <ItemScroller
               key={4}
               presenterGenerator={(view: UserItemView) => new FollowerPresenter(view)}
+              itemComponent={(value: User) => <UserItem value={value}/>}
             />
           }
         />
@@ -99,7 +106,7 @@ const UnauthenticatedRoutes = () => {
         path="/login"
         element={
           <Login
-            presenterGenerator={(view: LoginView) => new LoginPresenter(view)}
+            presenterGenerator={(view: AuthView) => new LoginPresenter(view)}
           />
         }
       />
@@ -109,7 +116,7 @@ const UnauthenticatedRoutes = () => {
         element={
           <Login
             originalUrl={location.pathname}
-            presenterGenerator={(view: LoginView) => new LoginPresenter(view)}
+            presenterGenerator={(view: AuthView) => new LoginPresenter(view)}
           />
         }
       />
