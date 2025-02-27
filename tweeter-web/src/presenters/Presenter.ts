@@ -10,18 +10,9 @@ export interface MessageView extends View {
 	clearLastInfoMessage: () => void
 }
 
-export interface AuthView extends View {
-	updateUserInfo: (
-		user: User,
-		user2: User,
-		authToken: AuthToken,
-		rememberMe: boolean
-	) => void
-}
-
 export class Presenter<V extends View> {
 	private _view: V;
-	private navigate: NavigateFunction = useNavigate();
+	private _navigate: NavigateFunction = useNavigate();
 
 	protected constructor(view: V) {
 		this._view = view;
@@ -29,6 +20,10 @@ export class Presenter<V extends View> {
 
 	protected get view(): V {
 		return this._view;
+	}
+
+	protected get navigate() {
+		return this._navigate;
 	}
 
 	protected async doFailureReportingOperation(operation: () => Promise<void>, operationDescription: string): Promise<void> {
@@ -40,20 +35,6 @@ export class Presenter<V extends View> {
 			);
 		}
 	};
-
-	protected async authenticate(authFunc: () => Promise<[User, AuthToken]>, rememberMe: boolean, view: AuthView): Promise<void> {
-		const [user, authToken] = await authFunc();
-		view.updateUserInfo(user, user, authToken, rememberMe);
-	}
-
-	protected authNavigate(navString?: string) {
-		if (navString) {
-			this.navigate(navString);
-		}
-		else {
-			this.navigate("/");
-		}
-	}
 
 
 }

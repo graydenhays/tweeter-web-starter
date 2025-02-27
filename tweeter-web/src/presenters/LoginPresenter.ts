@@ -1,12 +1,9 @@
-import { UserService } from "../model/service/UserService";
-import { AuthView, Presenter } from "./Presenter";
-
-export class LoginPresenter extends Presenter<AuthView> {
-	private userService: UserService;
+import { AuthPresenter, AuthView } from "./AuthPresenter";
+// create AuthenticatePresenter and inherit from that
+export class LoginPresenter extends AuthPresenter<AuthView> {
 
 	public constructor(view: AuthView) {
 		super(view);
-		this.userService = new UserService();
 	}
 
 	public async doLogin(

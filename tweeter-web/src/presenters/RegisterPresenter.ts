@@ -1,19 +1,16 @@
-import { UserService } from "../model/service/UserService";
 import { Buffer } from "buffer";
-import { AuthView, Presenter } from "./Presenter";
-
+import { AuthPresenter, AuthView } from "./AuthPresenter";
+// create AuthenticatePresenter and inherit from that
 export interface RegisterView extends AuthView {
 	setImageUrl: React.Dispatch<React.SetStateAction<string>>
 	setImageBytes: React.Dispatch<React.SetStateAction<Uint8Array>>
 	setImageFileExtension: React.Dispatch<React.SetStateAction<string>>
 }
 
-export class RegisterPresenter extends Presenter<RegisterView> {
-	private userService: UserService;
+export class RegisterPresenter extends AuthPresenter<RegisterView> {
 
 	public constructor(view: RegisterView) {
 		super(view);
-		this.userService = new UserService();
 	}
 
 	public async doRegister(
