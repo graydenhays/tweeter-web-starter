@@ -1,6 +1,5 @@
 import { Buffer } from "buffer";
 import { AuthPresenter, AuthView } from "./AuthPresenter";
-// create AuthenticatePresenter and inherit from that
 export interface RegisterView extends AuthView {
 	setImageUrl: React.Dispatch<React.SetStateAction<string>>
 	setImageBytes: React.Dispatch<React.SetStateAction<Uint8Array>>

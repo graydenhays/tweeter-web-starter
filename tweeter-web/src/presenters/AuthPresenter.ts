@@ -1,7 +1,7 @@
 import { AuthToken, User } from "tweeter-shared";
 import { UserService } from "../model/service/UserService";
 import { Presenter, View } from "./Presenter";
-// import { NavigateFunction, NavigateOptions, To, useNavigate } from "react-router-dom";
+import { NavigateFunction, useNavigate } from "react-router-dom";
 
 export interface AuthView extends View {
 	updateUserInfo: (
@@ -11,9 +11,9 @@ export interface AuthView extends View {
 		rememberMe: boolean
 	) => void
 }
-// create AuthenticatePresenter and inherit from that
 export abstract class AuthPresenter<V extends AuthView> extends Presenter<V> {
 	private _userService: UserService;
+	private navigate: NavigateFunction = useNavigate();
 
 	public constructor(view: V) {
 		super(view);

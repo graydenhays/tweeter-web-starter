@@ -1,5 +1,4 @@
 import { AuthPresenter, AuthView } from "./AuthPresenter";
-// create AuthenticatePresenter and inherit from that
 export class LoginPresenter extends AuthPresenter<AuthView> {
 
 	public constructor(view: AuthView) {
