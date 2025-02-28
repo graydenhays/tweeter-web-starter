@@ -1,6 +1,5 @@
 import "./PostStatus.css";
 import { useState } from "react";
-import { AuthToken, Status } from "tweeter-shared";
 import useToastListener from "../toaster/ToastListenerHook";
 import userInfoHook from "../userInfo/UserInfoHook";
 import { PostStatusPresenter, PostStatusView } from "../../presenters/PostStatusPresenter";
@@ -39,6 +38,7 @@ const PostStatus = () => {
           <textarea
             className="form-control"
             id="postStatusTextArea"
+            aria-label="postStatusText"
             rows={10}
             placeholder="What's on your mind?"
             value={post}
@@ -50,6 +50,7 @@ const PostStatus = () => {
         <div className="form-group">
           <button
             id="postStatusButton"
+            aria-label="postStatus"
             className="btn btn-md btn-primary me-1"
             type="button"
             disabled={checkButtonStatus()}
@@ -68,6 +69,7 @@ const PostStatus = () => {
           </button>
           <button
             id="clearStatusButton"
+            aria-label="clear"
             className="btn btn-md btn-secondary"
             type="button"
             disabled={checkButtonStatus()}

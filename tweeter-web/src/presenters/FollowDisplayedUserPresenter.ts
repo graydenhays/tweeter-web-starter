@@ -18,12 +18,13 @@ export class FollowDisplayedUserPresenter extends DisplayedUserPresenter {
 		event.preventDefault();
 		this.doFailureReportingOperation(async () => {
 			this.view.setIsLoading(true);
-			this.view.displayInfoMessage(`Following ${displayedUser!.name}...`, 0);
 
 			const [followerCount, followeeCount] = await this.followService.follow(
 				authToken!,
 				displayedUser!
 			);
+
+			this.view.displayInfoMessage(`Following ${displayedUser!.name}...`, 2000);
 
 			this.view.setIsFollower(true);
 			this.view.setFollowerCount(followerCount);

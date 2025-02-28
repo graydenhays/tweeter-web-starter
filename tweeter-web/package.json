@@ -71,6 +71,7 @@
     "@testing-library/user-event": "^14.6.1",
     "@types/jest": "^29.5.14",
     "@types/node": "^20.11.24",
+    "@types/react-router-dom": "^5.3.3",
     "@typestrong/ts-mockito": "^2.7.12",
     "@vitejs/plugin-react": "^4.2.1",
     "babel-jest": "^29.7.0",

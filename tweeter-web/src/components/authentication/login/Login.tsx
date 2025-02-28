@@ -11,6 +11,7 @@ import { AuthView } from "../../../presenters/AuthPresenter";
 
 interface Props {
   originalUrl?: string;
+  presenter?: LoginPresenter;
   presenterGenerator: (view: AuthView) => LoginPresenter;
 }
 
@@ -38,7 +39,7 @@ const Login = (props: Props) => {
     displayErrorMessage: displayErrorMessage,
   }
 
-  const [presenter] = useState(props.presenterGenerator(listener));
+  const [presenter] = useState(props.presenter ?? props.presenterGenerator(listener));
 
   const doLogin = () => {
     setIsLoading(true);
