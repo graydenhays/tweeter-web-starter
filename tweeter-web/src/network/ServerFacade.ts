@@ -9,9 +9,13 @@ import {
 	GetUserResponse,
 	IsFollowerRequest,
 	IsFollowerResponse,
+	PagedStatusItemRequest,
+	PagedStatusItemResponse,
 	PagedUserItemRequest,
 	PagedUserItemResponse,
+	PostStatusRequest,
 	RegisterRequest,
+	Status,
 	TweeterRequest,
 	TweeterResponse,
 	User,
@@ -194,32 +198,77 @@ export class ServerFacade {
 			throw new Error(response.message);
 		}
 	}
-	public async getMoreFollowees(
-		request: PagedUserItemRequest
-	): Promise<[User[], boolean]> {
+	public async getMoreFollows(
+		request: PagedUserItemRequest,
+		path: string
+	  ): Promise<[User[], boolean]> {
 		const response = await this.clientCommunicator.doPost<
-			PagedUserItemRequest,
-			PagedUserItemResponse
-		>(request, "/followee/list");
+		  PagedUserItemRequest,
+		  PagedUserItemResponse
+		>(request, path);
 
 		// Convert the UserDto array returned by ClientCommunicator to a User array
 		const items: User[] | null =
-		response.success && response.items
+		  response.success && response.items
 			? response.items.map((dto) => User.fromDto(dto) as User)
 			: null;
 
 		// Handle errors
 		if (response.success) {
-			if (items == null) {
-				throw new Error(`No followees found`);
-			} else {
-				return [items, response.hasMore];
-			}
+		  if (items == null) {
+			throw new Error(`No followers or followees found`);
+		  } else {
+			return [items, response.hasMore];
+		  }
 		} else {
-			console.error(response);
-			throw new Error(response.message);
+		  console.error(response);
+		  throw new Error(response.message);
 		}
 	}
 
 	// StatusService
+
+	public async getMoreStatusItems(
+		request: PagedStatusItemRequest,
+		path: string
+	  ): Promise<[Status[], boolean]> {
+		const response = await this.clientCommunicator.doPost<
+		  PagedStatusItemRequest,
+		  PagedStatusItemResponse
+		>(request, path);
+
+		// Convert the StatusDto array returned by ClientCommunicator to a User array
+		const items: Status[] | null =
+		  response.success && response.items
+			? response.items.map((dto) => Status.fromDto(dto) as Status)
+			: null;
+
+		// Handle errors
+		if (response.success) {
+		  if (items == null) {
+			throw new Error(`No status items found`);
+		  } else {
+			return [items, response.hasMore];
+		  }
+		} else {
+		  console.error(response);
+		  throw new Error(response.message);
+		}
+	  }
+
+	  public async postStatus(
+		request: PostStatusRequest,
+	  ): Promise<void>  {
+		const response = await this.clientCommunicator.doPost<
+		  PostStatusRequest,
+		  TweeterResponse
+		>(request, "/postStatus");
+		// Handle errors
+		if (response.success) {
+			return;
+		} else {
+		  console.error(response);
+		  throw new Error(response.message);
+		}
+	  }
 }

@@ -11,7 +11,14 @@ export class FollowService {
 		lastItem: User | null
 	  ): Promise<[User[], boolean]> {
 		// TODO: Replace with the result of calling server
-		return FakeData.instance.getPageOfUsers(lastItem, pageSize, userAlias);
+		//return FakeData.instance.getPageOfUsers(lastItem, pageSize, userAlias);
+        return await this.facade.getMoreFollows({
+			token: authToken.token,
+			userAlias: userAlias,
+			pageSize: pageSize,
+			lastItem: lastItem ? lastItem.dto : null
+		  }, "/follower/list"
+		);
 	  };
 
 	public async loadMoreFollowees(
@@ -22,12 +29,12 @@ export class FollowService {
 	): Promise<[User[], boolean]> {
 		// TODO: Replace with the result of calling server
 		// return FakeData.instance.getPageOfUsers(lastItem, pageSize, userAlias);
-		return await this.facade.getMoreFollowees({
+		return await this.facade.getMoreFollows({
 			token: authToken.token,
 			userAlias: userAlias,
 			pageSize: pageSize,
-			lastItem: lastItem
-		});
+			lastItem: lastItem ? lastItem.dto : null
+		}, "/followee/list");
 	};
 
 	public async getIsFollowerStatus(
