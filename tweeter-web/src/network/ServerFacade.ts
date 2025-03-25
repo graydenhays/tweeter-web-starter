@@ -54,13 +54,15 @@ export class ServerFacade {
 			throw new Error(response.message);
 		}
 	}
-	public async login (
-		request: AuthRequest
+	public async getAuth (
+		request: AuthRequest | RegisterRequest,
+		path: string,
+		message: string
 	): Promise<[UserDto, AuthToken]> {
 		const response = await this.clientCommunicator.doPost<
 			AuthRequest,
 			AuthResponse
-		>(request, "/login");
+		>(request, path);
 
 		const user: UserDto | null =
 		response.success && response.returnedUser
@@ -68,31 +70,7 @@ export class ServerFacade {
 			:	null;
 		if (response.success) {
 			if (user == null) {
-				throw new Error(`Unrecognized user`);
-			} else {
-				return [user, response.authToken];
-			}
-		}
-		else {
-			console.error(response);
-			throw new Error(response.message);
-		}
-	}
-	public async register (
-		request: RegisterRequest
-	): Promise<[UserDto, AuthToken]> {
-		const response = await this.clientCommunicator.doPost<
-			RegisterRequest,
-			AuthResponse
-		>(request, "/register");
-
-		const user: UserDto | null =
-		response.success && response.returnedUser
-			?	response.returnedUser
-			:	null;
-		if (response.success) {
-			if (user == null) {
-				throw new Error(`User could not be registered`);
+				throw new Error(message);
 			} else {
 				return [user, response.authToken];
 			}
@@ -134,13 +112,14 @@ export class ServerFacade {
 			throw new Error(response.message);
 		}
 	}
-	public async getFolloweeCount(
-		request: FollowRequest
+	public async getFollowCount(
+		request: FollowRequest,
+		path: string
 	): Promise<number> {
 		const response = await this.clientCommunicator.doPost<
 			FollowRequest,
 			FollowCountResponse
-		>(request, "/getFolloweeCount");
+		>(request, path);
 
 		if (response.success) {
 			return response.followCount
@@ -150,45 +129,14 @@ export class ServerFacade {
 			throw new Error(response.message);
 		}
 	}
-	public async getFollowerCount(
-		request: FollowRequest
-	): Promise<number> {
-		const response = await this.clientCommunicator.doPost<
-			FollowRequest,
-			FollowCountResponse
-		>(request, "/getFollowerCount");
-
-		if (response.success) {
-			return response.followCount
-		}
-		else {
-			console.error(response);
-			throw new Error(response.message);
-		}
-	}
-	public async follow(
-		request: FollowRequest
+	public async followUnfollow(
+		request: FollowRequest,
+		path: string
 	): Promise<[number, number]> {
 		const response = await this.clientCommunicator.doPost<
 			FollowRequest,
 			FollowResponse
-		>(request, "/follow");
-
-		if (response.success) {
-			return [response.followCount, response.followCount2]
-		}
-		else {
-			console.error(response);
-			throw new Error(response.message);
-		}
-	}
-	public async unfollow(
-		request: FollowRequest
-	): Promise<[number, number]> {
-		const response = await this.clientCommunicator.doPost<
-			FollowRequest,
-			FollowResponse
-		>(request, "/unfollow");
+		>(request, path);
 
 		if (response.success) {
 			return [response.followCount, response.followCount2]
@@ -255,7 +203,6 @@ export class ServerFacade {
 		  throw new Error(response.message);
 		}
 	  }
-
 	  public async postStatus(
 		request: PostStatusRequest,
 	  ): Promise<void>  {

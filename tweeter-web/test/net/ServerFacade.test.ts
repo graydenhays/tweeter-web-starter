@@ -26,17 +26,17 @@ describe('ServerFacade Tests', () => {
 		userImageBytes: imageBytes,
 		imageFileExtension: 'jpg',
 	  };
-    const [user, token] = await serverFacade.register(request);
+    const [user, token] = await serverFacade.getAuth(request, "/register", "User could not be registered");
     expect(user).toBeDefined();
     expect(token).toBeDefined();
   });
 
   test('get followers method should return followers', async () => {
     const request: PagedUserItemRequest = {
-		token: 'a',
-		userAlias: '@bonnie',
-		pageSize: 10,
-		lastItem: null,
+      token: 'a',
+      userAlias: '@bonnie',
+      pageSize: 10,
+      lastItem: null,
     };
     const [followers, hasMore] = await serverFacade.getMoreFollows(request, "/follower/list");
     expect(followers).toBeDefined();
@@ -54,7 +54,7 @@ describe('ServerFacade Tests', () => {
 		token: '',
 		user: user,
     };
-    const followersCount = await serverFacade.getFollowerCount(request);
+    const followersCount = await serverFacade.getFollowCount(request, "/getFollowerCount");
     expect(followersCount).toBeGreaterThan(-1);
   });
 });

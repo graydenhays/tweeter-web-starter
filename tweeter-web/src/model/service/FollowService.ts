@@ -57,10 +57,10 @@ export class FollowService {
 	): Promise<number> {
 		// TODO: Replace with the result of calling server
 		// return FakeData.instance.getFolloweeCount(user.alias);
-		return await this.facade.getFolloweeCount({
+		return await this.facade.getFollowCount({
 			token: authToken.token,
 			user: user.dto
-		})
+		}, "/getFolloweeCount")
 	};
 
 	public async getFollowerCount(
@@ -69,10 +69,10 @@ export class FollowService {
 	): Promise<number> {
 		// TODO: Replace with the result of calling server
 		// return FakeData.instance.getFollowerCount(user.alias);
-		return await this.facade.getFollowerCount({
+		return await this.facade.getFollowCount({
 			token: authToken.token,
 			user: user.dto
-		})
+		}, "/getFollowerCount")
 	};
 
 	public async follow(
@@ -88,10 +88,10 @@ export class FollowService {
 		// const followeeCount = await this.getFolloweeCount(authToken, userToFollow);
 
 		// return [followerCount, followeeCount];
-		return await this.facade.follow({
+		return await this.facade.followUnfollow({
 			token: authToken.token,
 			user: userToFollow.dto
-		})
+		}, "/follow")
 	};
 
 	public async unfollow(
@@ -107,9 +107,9 @@ export class FollowService {
 		// const followeeCount = await this.getFolloweeCount(authToken, userToUnfollow);
 
 		// return [followerCount, followeeCount];
-		return await this.facade.unfollow({
+		return await this.facade.followUnfollow({
 			token: authToken.token,
 			user: userToUnfollow.dto
-		})
+		}, "/unfollow")
 	};
 }

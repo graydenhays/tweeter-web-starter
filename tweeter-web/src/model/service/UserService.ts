@@ -17,11 +17,11 @@ export class UserService {
 		// }
 
 		// return [user, FakeData.instance.authToken];
-		const [userDto, authToken] = await this.facade.login({
+		const [userDto, authToken] = await this.facade.getAuth({
 			token: undefined,
 			alias: alias,
 			password: password
-		})
+		}, "/login", "Unrecognized user");
 		return [User.fromDto(userDto)!, authToken]
 	};
 
@@ -46,7 +46,7 @@ export class UserService {
 
 		// return [user, FakeData.instance.authToken];
 
-		const [userDto, authToken] = await this.facade.register({
+		const [userDto, authToken] = await this.facade.getAuth({
 			token: undefined,
 			alias: alias,
 			password: password,
@@ -54,7 +54,7 @@ export class UserService {
 			lastName: lastName,
 			userImageBytes: imageStringBase64,
 			imageFileExtension: imageFileExtension
-		});
+		}, "/register", "User could not be registered");
 
 		return [User.fromDto(userDto)!, authToken]
 	};
