@@ -1,19 +1,28 @@
 import { Buffer } from "buffer";
 import { AuthToken, FakeData, User } from "tweeter-shared";
+import { ServerFacade } from "../../network/ServerFacade";
 
 export class UserService {
+	private facade = new ServerFacade();
+
 	public async login(
 		alias: string,
 		password: string
 	): Promise<[User, AuthToken]> {
 		// TODO: Replace with the result of calling the server
-		const user = FakeData.instance.firstUser;
+		// const user = FakeData.instance.firstUser;
 
-		if (user === null) {
-		  throw new Error("Invalid alias or password");
-		}
+		// if (user === null) {
+		//   throw new Error("Invalid alias or password");
+		// }
 
-		return [user, FakeData.instance.authToken];
+		// return [user, FakeData.instance.authToken];
+		const [userDto, authToken] = await this.facade.login({
+			token: undefined,
+			alias: alias,
+			password: password
+		})
+		return [User.fromDto(userDto)!, authToken]
 	};
 
 	public async register(
@@ -29,13 +38,25 @@ export class UserService {
 		  Buffer.from(userImageBytes).toString("base64");
 
 		// TODO: Replace with the result of calling the server
-		const user = FakeData.instance.firstUser;
+		// const user = FakeData.instance.firstUser;
 
-		if (user === null) {
-		  throw new Error("Invalid registration");
-		}
+		// if (user === null) {
+		//   throw new Error("Invalid registration");
+		// }
 
-		return [user, FakeData.instance.authToken];
+		// return [user, FakeData.instance.authToken];
+
+		const [userDto, authToken] = await this.facade.register({
+			token: undefined,
+			alias: alias,
+			password: password,
+			firstName: firstName,
+			lastName: lastName,
+			userImageBytes: userImageBytes,
+			imageFileExtension: imageFileExtension
+		})
+
+		return [User.fromDto(userDto)!, authToken]
 	};
 
 	public async getUser (
@@ -43,11 +64,18 @@ export class UserService {
 		alias: string
 	): Promise<User | null> {
 		// TODO: Replace with the result of calling server
-		return FakeData.instance.findUserByAlias(alias);
+		// return FakeData.instance.findUserByAlias(alias);
+		return this.facade.getUser({
+			token: authToken.token,
+			userAlias: alias
+		})
 	};
 
 	public async logout (authToken: AuthToken): Promise<void> {
 		// Pause so we can see the logging out message. Delete when the call to the server is implemented.
+		this.facade.logout({
+			token: authToken.token
+		});
 		await new Promise((res) => setTimeout(res, 1000));
 	};
 }

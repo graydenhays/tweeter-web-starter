@@ -1,0 +1,10 @@
+BUCKET='cs340-scripts-bucket'
+LAMBDA_ROLE='arn:aws:iam::664418969627:role/cs340-scripts-iam-role'
+EDIT_LAMBDALIST='
+tweeterGetFollowees | lambda/follow/GetFolloweesLambda.handler
+tweeterGetUser | lambda/user/GetUserLambda.handler
+tweeterRegister | lambda/user/RegisterLambda.handler
+tweeterLogin | lambda/user/LoginLambda.handler
+tweeterLogout | lambda/user/LogoutLambda.handler
+'
+LAMBDALAYER_ARN='arn:aws:lambda:us-east-2:664418969627:layer:cs340-scripts-lambda-layer:6'
