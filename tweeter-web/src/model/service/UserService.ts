@@ -52,9 +52,9 @@ export class UserService {
 			password: password,
 			firstName: firstName,
 			lastName: lastName,
-			userImageBytes: userImageBytes,
+			userImageBytes: imageStringBase64,
 			imageFileExtension: imageFileExtension
-		})
+		});
 
 		return [User.fromDto(userDto)!, authToken]
 	};

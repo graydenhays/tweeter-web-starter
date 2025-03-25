@@ -63,7 +63,7 @@ describe("PostStatus Component", () => {
 			user
 		} = renderPostStatusAndGetElement();
 
-		console.log(postStatusButton);
+		// console.log(postStatusButton);
 
 		await user.type(postStatusText, "a");
 
