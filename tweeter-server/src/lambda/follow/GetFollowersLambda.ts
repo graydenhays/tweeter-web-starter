@@ -3,7 +3,7 @@ import { FollowService } from "../../model/service/FollowService";
 
 export const handler = async (request: PagedUserItemRequest): Promise<PagedUserItemResponse> => {
 	const followService = new FollowService();
-	const [items, hasMore] = await followService.loadMoreFollowees(
+	const [items, hasMore] = await followService.loadMoreFollowers(
 		request.token!,
 		request.userAlias,
 		request.pageSize,

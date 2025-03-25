@@ -1,6 +1,6 @@
-import { User } from "../../domain/User";
+import { UserDto } from "../../dto/UserDto";
 import { TweeterResponse } from "./TweeterResponse";
 
 export interface GetUserResponse extends TweeterResponse {
-	returnedUser: User | null
+	returnedUser: UserDto | null
 }

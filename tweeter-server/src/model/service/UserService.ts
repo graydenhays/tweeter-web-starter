@@ -38,10 +38,10 @@ export class UserService {
 	public async getUser (
 		token: string,
 		alias: string
-	): Promise<User | null> {
+	): Promise<UserDto | null> {
 		// TODO: Replace with the result of calling server
 		const user = FakeData.instance.findUserByAlias(alias);
-		return User.fromDto(user);
+		return user!.dto;
 	};
 
 	public async logout (token: string): Promise<void> {

@@ -17,12 +17,17 @@ export type { PagedUserItemRequest } from "./model/net/request/PagedUserItemRequ
 export type { GetUserRequest } from "./model/net/request/GetUserRequest"
 export type { RegisterRequest } from "./model/net/request/RegisterRequest"
 export type { AuthRequest } from "./model/net/request/AuthRequest"
+export type { FollowRequest } from "./model/net/request/FollowRequest"
+export type { IsFollowerRequest } from "./model/net/request/IsFollowerRequest"
 
 //Responses
 export type { PagedUserItemResponse } from "./model/net/response/PagedUserItemResponse"
 export type { GetUserResponse } from "./model/net/response/GetUserResponse"
 export type { TweeterResponse } from "./model/net/response/TweeterResponse"
 export type { AuthResponse } from "./model/net/response/AuthResponse"
+export type { FollowResponse } from "./model/net/response/FollowResponse"
+export type { FollowCountResponse } from "./model/net/response/FollowCountResponse"
+export type { IsFollowerResponse } from "./model/net/response/IsFollowerResponse"
 
 // Other
 

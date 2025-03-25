@@ -2,8 +2,13 @@ import {
 	AuthRequest,
 	AuthResponse,
 	AuthToken,
+	FollowCountResponse,
+	FollowRequest,
+	FollowResponse,
 	GetUserRequest,
 	GetUserResponse,
+	IsFollowerRequest,
+	IsFollowerResponse,
 	PagedUserItemRequest,
 	PagedUserItemResponse,
 	RegisterRequest,
@@ -19,15 +24,17 @@ export class ServerFacade {
 
 	private clientCommunicator = new ClientCommunicator(this.SERVER_URL);
 
+	// UserService
+
 	public async getUser(
 		request: GetUserRequest
-	): Promise<User> {
+	): Promise<UserDto> {
 		const response = await this.clientCommunicator.doPost<
 			GetUserRequest,
 			GetUserResponse
 		>(request, "/getUser");
 
-		const user: User | null =
+		const user: UserDto | null =
 		response.success && response.returnedUser
 			?	response.returnedUser
 			:	null;
@@ -43,7 +50,6 @@ export class ServerFacade {
 			throw new Error(response.message);
 		}
 	}
-
 	public async login (
 		request: AuthRequest
 	): Promise<[UserDto, AuthToken]> {
@@ -68,7 +74,6 @@ export class ServerFacade {
 			throw new Error(response.message);
 		}
 	}
-
 	public async register (
 		request: RegisterRequest
 	): Promise<[UserDto, AuthToken]> {
@@ -93,7 +98,6 @@ export class ServerFacade {
 			throw new Error(response.message);
 		}
 	}
-
 	public async logout (
 		request: TweeterRequest
 	): Promise<void> {
@@ -108,6 +112,88 @@ export class ServerFacade {
 		}
 	}
 
+	// FollowService
+
+	public async getIsFollowerStatus(
+		request: IsFollowerRequest
+	): Promise<boolean> {
+		const response = await this.clientCommunicator.doPost<
+			IsFollowerRequest,
+			IsFollowerResponse
+		>(request, "/isFollowerStatus");
+
+		if (response.success) {
+			return response.isFollower
+		}
+		else {
+			console.error(response);
+			throw new Error(response.message);
+		}
+	}
+	public async getFolloweeCount(
+		request: FollowRequest
+	): Promise<number> {
+		const response = await this.clientCommunicator.doPost<
+			FollowRequest,
+			FollowCountResponse
+		>(request, "/getFolloweeCount");
+
+		if (response.success) {
+			return response.followCount
+		}
+		else {
+			console.error(response);
+			throw new Error(response.message);
+		}
+	}
+	public async getFollowerCount(
+		request: FollowRequest
+	): Promise<number> {
+		const response = await this.clientCommunicator.doPost<
+			FollowRequest,
+			FollowCountResponse
+		>(request, "/getFollowerCount");
+
+		if (response.success) {
+			return response.followCount
+		}
+		else {
+			console.error(response);
+			throw new Error(response.message);
+		}
+	}
+	public async follow(
+		request: FollowRequest
+	): Promise<[number, number]> {
+		const response = await this.clientCommunicator.doPost<
+			FollowRequest,
+			FollowResponse
+		>(request, "/follow");
+
+		if (response.success) {
+			return [response.followCount, response.followCount2]
+		}
+		else {
+			console.error(response);
+			throw new Error(response.message);
+		}
+	}
+	public async unfollow(
+		request: FollowRequest
+	): Promise<[number, number]> {
+		const response = await this.clientCommunicator.doPost<
+			FollowRequest,
+			FollowResponse
+		>(request, "/unfollow");
+
+		if (response.success) {
+			return [response.followCount, response.followCount2]
+		}
+		else {
+			console.error(response);
+			throw new Error(response.message);
+		}
+	}
 	public async getMoreFollowees(
 		request: PagedUserItemRequest
 	): Promise<[User[], boolean]> {
@@ -135,5 +221,5 @@ export class ServerFacade {
 		}
 	}
 
-	//add a method for each api method
+	// StatusService
 }

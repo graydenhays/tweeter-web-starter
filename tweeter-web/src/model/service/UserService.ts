@@ -65,10 +65,11 @@ export class UserService {
 	): Promise<User | null> {
 		// TODO: Replace with the result of calling server
 		// return FakeData.instance.findUserByAlias(alias);
-		return this.facade.getUser({
+		const user = await this.facade.getUser({
 			token: authToken.token,
 			userAlias: alias
-		})
+		});
+		return User.fromDto(user);
 	};
 
 	public async logout (authToken: AuthToken): Promise<void> {
