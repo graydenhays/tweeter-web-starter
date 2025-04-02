@@ -1,4 +1,4 @@
-import { AuthToken, FakeData, Status } from "tweeter-shared";
+import { AuthToken, Status } from "tweeter-shared";
 import { ServerFacade } from "../../network/ServerFacade";
 
 export class StatusService {
@@ -10,7 +10,6 @@ export class StatusService {
         lastItem: Status | null,
     ): Promise<[Status[], boolean]> {
         // TODO: Replace with the result of calling server
-        //return FakeData.instance.getPageOfStatuses(lastItem, pageSize);
         return await this.serverFacade.getMoreStatusItems({
             token: authToken.token,
             userAlias: userAlias,

@@ -6,8 +6,8 @@ export enum Type {
 }
 
 export interface PostSegmentDto {
-	text: string,
-	startPos: number,
-	endPos: number,
-	type: Type
+	readonly text: string,
+	readonly startPos: number,
+	readonly endPos: number,
+	readonly type: Type
 }

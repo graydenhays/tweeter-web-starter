@@ -1,5 +1,5 @@
 import { Buffer } from "buffer";
-import { AuthToken, FakeData, User } from "tweeter-shared";
+import { AuthToken, User } from "tweeter-shared";
 import { ServerFacade } from "../../network/ServerFacade";
 
 export class UserService {
@@ -9,14 +9,6 @@ export class UserService {
 		alias: string,
 		password: string
 	): Promise<[User, AuthToken]> {
-		// TODO: Replace with the result of calling the server
-		// const user = FakeData.instance.firstUser;
-
-		// if (user === null) {
-		//   throw new Error("Invalid alias or password");
-		// }
-
-		// return [user, FakeData.instance.authToken];
 		const [userDto, authToken] = await this.facade.getAuth({
 			token: undefined,
 			alias: alias,

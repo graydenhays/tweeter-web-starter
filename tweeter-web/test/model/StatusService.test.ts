@@ -20,5 +20,6 @@ describe('StatusService Tests', () => {
     const [storyItems, hasMore] = await statusService.loadMoreStoryItems(authToken, userAlias, pageSize, lastItem);
     expect(storyItems).toBeDefined();
     expect(hasMore).toBeDefined();
+    //strengthen tests
   });
 });

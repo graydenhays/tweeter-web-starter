@@ -51,8 +51,8 @@ describe('ServerFacade Tests', () => {
       imageUrl: 'https://example.com/image.jpg',
     };
     const request: FollowRequest = {
-		token: '',
-		user: user,
+      token: '',
+      user: user,
     };
     const followersCount = await serverFacade.getFollowCount(request, "/getFollowerCount");
     expect(followersCount).toBeGreaterThan(-1);

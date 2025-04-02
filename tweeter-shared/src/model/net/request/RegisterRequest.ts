@@ -1,8 +1,8 @@
 import { AuthRequest } from "./AuthRequest";
 
 export interface RegisterRequest extends AuthRequest {
-	firstName: string,
-	lastName: string,
-	userImageBytes: Uint8Array | string,
-	imageFileExtension: string
+	readonly firstName: string,
+	readonly lastName: string,
+	readonly userImageBytes: Uint8Array | string,
+	readonly imageFileExtension: string
 }
