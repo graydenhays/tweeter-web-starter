@@ -69,9 +69,6 @@ export class FollowService {
 		authToken: AuthToken,
 		userToFollow: User
 	): Promise<[followerCount: number, followeeCount: number]> {
-		// Pause so we can see the follow message. Remove when connected to the server
-		await new Promise((f) => setTimeout(f, 2000));
-
 		return await this.facade.followUnfollow({
 			token: authToken.token,
 			user: userToFollow.dto
@@ -82,9 +79,6 @@ export class FollowService {
 		authToken: AuthToken,
 		userToUnfollow: User
 	): Promise<[followerCount: number, followeeCount: number]> {
-		// Pause so we can see the unfollow message. Remove when connected to the server
-		await new Promise((f) => setTimeout(f, 2000));
-
 		return await this.facade.followUnfollow({
 			token: authToken.token,
 			user: userToUnfollow.dto

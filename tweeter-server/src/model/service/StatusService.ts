@@ -1,14 +1,28 @@
-import { FakeData, Status, StatusDto } from "tweeter-shared";
+import { PostDto, StatusDto } from "tweeter-shared";
+import { StatusFactory } from "../../dao/factories/StatusFactory";
+import { StatusDAO } from "../../dao/interfaces/StatusDAO";
+import { AuthDAO } from "../../dao/interfaces/AuthDAO";
 
 export class StatusService {
+    statusFactory = new StatusFactory();
+    storyDAO: StatusDAO;
+    feedDAO: StatusDAO;
+    authDAO: AuthDAO;
+
+    constructor() {
+        this.storyDAO = this.statusFactory.createStoryDAO();
+        this.feedDAO = this.statusFactory.createFeedDAO();
+        this.authDAO = this.statusFactory.createAuthDAO();
+    }
+
     public async loadMoreStoryItems (
         token: string,
         userAlias: string,
         pageSize: number,
         lastItem: StatusDto | null,
-    ): Promise<[StatusDto[], boolean]> {
-        // TODO: Replace with the result of calling server
-        return this.getFakeData(lastItem, pageSize);
+    ): Promise<[PostDto[], boolean]> {
+        this.checkToken(token);
+        return await this.storyDAO.loadMoreItems(userAlias, pageSize, lastItem);
     };
 
     public async loadMoreFeedItems (
@@ -16,24 +30,26 @@ export class StatusService {
         userAlias: string,
         pageSize: number,
         lastItem: StatusDto | null,
-    ): Promise<[StatusDto[], boolean]> {
-        // TODO: Replace with the result of calling server
-        return this.getFakeData(lastItem, pageSize);
+    ): Promise<[PostDto[], boolean]> {
+        this.checkToken(token);
+        return await this.feedDAO.loadMoreItems(userAlias, pageSize, lastItem);
     };
 
     public async postStatus (
         token: string,
         newStatus: StatusDto
       ): Promise<void> {
-        // Pause so we can see the logging out message. Remove when connected to the server
-        await new Promise((f) => setTimeout(f, 2000));
-
-        // TODO: Call the server to post the status
+        await this.checkToken(token);
+        await this.storyDAO.putStatus(newStatus);
     };
 
-    private async getFakeData(lastItem: StatusDto | null, pageSize: number): Promise<[StatusDto[], boolean]> {
-        const [items, hasMore] = FakeData.instance.getPageOfStatuses(Status.fromDto(lastItem), pageSize);
-        const dtos = items.map((status) => status.dto);
-        return [dtos, hasMore];
+    private async checkToken(token: string): Promise<void> {
+        const authToken = await this.authDAO.checkToken(token);
+        if (authToken === undefined) {
+            throw new Error("User not authorized");
+        } else if (Date.now() - authToken[0].timestamp > 900000) {
+			this.authDAO.deleteToken(token);
+			throw new Error("Session timed out");
+		}
     }
 }

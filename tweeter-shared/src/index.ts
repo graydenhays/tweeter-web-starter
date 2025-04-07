@@ -8,11 +8,16 @@ export { Type } from "./model/dto/PostSegmentDto"
 export { Status } from "./model/domain/Status";
 export { User } from "./model/domain/User";
 export { AuthToken } from "./model/domain/AuthToken";
+// export { DataPage } from "./model/dto/entity/DataPage"
+export { FollowerEntity } from "./model/dto/entity/FollowerEntity"
+
 
 // DTOs
 export type { UserDto } from "./model/dto/UserDto"
 export type { StatusDto } from "./model/dto/StatusDto"
 export type { PostSegmentDto } from "./model/dto/PostSegmentDto"
+export type { AuthTokenDto } from "./model/dto/AuthTokenDto"
+export type { PostDto } from "./model/dto/PostDto"
 
 // Requests
 export type { TweeterRequest } from "./model/net/request/TweeterRequest"

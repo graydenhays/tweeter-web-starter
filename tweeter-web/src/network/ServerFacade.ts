@@ -188,7 +188,18 @@ export class ServerFacade {
 		// Convert the StatusDto array returned by ClientCommunicator to a User array
 		const items: Status[] | null =
 		  response.success && response.items
-			? response.items.map((dto) => Status.fromDto(dto) as Status)
+			? response.items.map((dto) => {
+				return new Status(
+					dto.post,
+					User.fromDto({
+						firstName: dto.firstName,
+						lastName: dto.lastName,
+						alias: dto.userAlias,
+						imageUrl: dto.imageUrl
+					})!,
+					dto.timestamp
+				)
+			})
 			: null;
 
 		// Handle errors
