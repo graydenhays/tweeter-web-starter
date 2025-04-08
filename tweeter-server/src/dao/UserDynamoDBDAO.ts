@@ -33,6 +33,7 @@ export class UserDynamoDBDAO implements UserDAO {
 				[this.user_password_attr]: password,
 			},
 		};
+		console.log("REGISTER PARAMS:::: ", params);
 		await this.client.send(new PutCommand(params));
 	}
 	async updateUser(user: UserDto): Promise<void> {

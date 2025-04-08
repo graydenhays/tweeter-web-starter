@@ -25,20 +25,20 @@ export class UserService {
 
 		const userData = await this.userDAO.getUser(alias);
 		if (userData && userData[1]) {
-			// const validPassword = await bcrypt.compare(password, userData[1])
-			if (password === userData[1]) {
+			const validPassword = await bcrypt.compare(password, userData[1])
+			if (validPassword) {
 				userDto = userData[0];
 			} else {
-				throw new Error("Invalid password");
+				throw new Error("[BadRequest]: Invalid password");
 			}
 		}
 		else {
-			throw new Error("Invalid alias or password"); // throw a 400 error here??
+			throw new Error("[BadRequest]: Invalid alias");
 		}
 
 		// generate auth token
 		const authToken = AuthToken.Generate();
-		this.authDAO.putToken(authToken, userDto);
+		this.authDAO.putToken(authToken, userDto.alias);
 
 		return [userDto, authToken]
 	};
@@ -58,7 +58,7 @@ export class UserService {
 			|| (password === "" || password === null)
 			|| (imageStringBase64 === "" || imageStringBase64 === null)
 		) {
-			throw new Error("Invalid registration"); // throw a 400 error here? necessary error check?
+			throw new Error("[BadRequest]: Invalid registration"); // throw a 400 error here? necessary error check?
 		}
 
 		// register image with s3
@@ -73,15 +73,20 @@ export class UserService {
 		}
 
 		// salting
-		// const salt = await bcrypt.genSalt();
-		// const hashedPassword = await bcrypt.hash(password, salt);
-		// await this.userDAO.putUser(userDto, hashedPassword);
-		await this.userDAO.putUser(userDto, password);
+		const salt = await bcrypt.genSalt();
+		const hashedPassword = await bcrypt.hash(password, salt);
+		console.log("HASHED PASSWORD:::: ", hashedPassword);
+		await this.userDAO.putUser(userDto, hashedPassword);
+		// await this.userDAO.putUser(userDto, password);
 
 		// generate auth token
 		const authToken = AuthToken.Generate();
-		this.authDAO.putToken(authToken, userDto);
-
+		try {
+			this.authDAO.putToken(authToken, userDto.alias);
+		}
+		catch(e) {
+			console.log("Error from register::: ", e);
+		}
 		return [userDto, authToken]
 	};
 
@@ -89,7 +94,7 @@ export class UserService {
 		token: string,
 		alias: string
 	): Promise<UserDto | null> {
-		this.checkToken(token);
+		// this.checkToken(token);
 
 		const userData = await this.userDAO.getUser(alias);
 		return userData ? userData[0] : null
@@ -100,12 +105,10 @@ export class UserService {
 	};
 
 	private async checkToken(token: string): Promise<void> {
-        const authToken = await this.authDAO.checkToken(token);
-        if (authToken === undefined) {
-            throw new Error("User not authorized");
-        } else if (Date.now() - authToken[0].timestamp > 900000) {
+        const validToken = await this.authDAO.checkToken(token);
+        if (!validToken) {
 			this.authDAO.deleteToken(token);
-			throw new Error("Session timed out");
+			throw new Error("[BadRequest]: Session timed out");
 		}
     }
 }

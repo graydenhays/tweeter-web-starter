@@ -189,16 +189,7 @@ export class ServerFacade {
 		const items: Status[] | null =
 		  response.success && response.items
 			? response.items.map((dto) => {
-				return new Status(
-					dto.post,
-					User.fromDto({
-						firstName: dto.firstName,
-						lastName: dto.lastName,
-						alias: dto.userAlias,
-						imageUrl: dto.imageUrl
-					})!,
-					dto.timestamp
-				)
+				return Status.fromDto(dto)!
 			})
 			: null;
 

@@ -1,4 +1,4 @@
-import { PostDto, StatusDto } from "tweeter-shared";
+import { StatusDto } from "tweeter-shared";
 import { StatusFactory } from "../../dao/factories/StatusFactory";
 import { StatusDAO } from "../../dao/interfaces/StatusDAO";
 import { AuthDAO } from "../../dao/interfaces/AuthDAO";
@@ -20,9 +20,9 @@ export class StatusService {
         userAlias: string,
         pageSize: number,
         lastItem: StatusDto | null,
-    ): Promise<[PostDto[], boolean]> {
-        this.checkToken(token);
-        return await this.storyDAO.loadMoreItems(userAlias, pageSize, lastItem);
+    ): Promise<[StatusDto[], boolean]> {
+        // this.checkToken(token);
+        return await this.storyDAO.loadMoreItems(userAlias, pageSize, lastItem, 'story');
     };
 
     public async loadMoreFeedItems (
@@ -30,26 +30,24 @@ export class StatusService {
         userAlias: string,
         pageSize: number,
         lastItem: StatusDto | null,
-    ): Promise<[PostDto[], boolean]> {
-        this.checkToken(token);
-        return await this.feedDAO.loadMoreItems(userAlias, pageSize, lastItem);
+    ): Promise<[StatusDto[], boolean]> {
+        // this.checkToken(token);
+        return await this.feedDAO.loadMoreItems(userAlias, pageSize, lastItem, 'feed');
     };
 
     public async postStatus (
         token: string,
         newStatus: StatusDto
       ): Promise<void> {
-        await this.checkToken(token);
+        // await this.checkToken(token);
         await this.storyDAO.putStatus(newStatus);
     };
 
     private async checkToken(token: string): Promise<void> {
-        const authToken = await this.authDAO.checkToken(token);
-        if (authToken === undefined) {
-            throw new Error("User not authorized");
-        } else if (Date.now() - authToken[0].timestamp > 900000) {
+        const validToken = await this.authDAO.checkToken(token);
+        if (!validToken) {
 			this.authDAO.deleteToken(token);
-			throw new Error("Session timed out");
+			throw new Error("[BadRequest]: Session timed out");
 		}
     }
 }

@@ -16,4 +16,4 @@ tweeterGetMoreStoryItems | lambda/status/GetMoreStoryItemsLambda.handler
 tweeterPostStatus | lambda/status/PostStatusLambda.handler
 tweeterGetFollowers | lambda/follow/GetFollowersLambda.handler
 '
-LAMBDALAYER_ARN='arn:aws:lambda:us-east-2:664418969627:layer:cs340-scripts-lambda-layer:19'
+LAMBDALAYER_ARN='arn:aws:lambda:us-east-2:664418969627:layer:cs340-scripts-lambda-layer:21'

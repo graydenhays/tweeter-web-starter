@@ -2,22 +2,19 @@ import { UserDto } from "tweeter-shared";
 import { FollowFactory } from "../../dao/factories/FollowFactory";
 import { FollowDAO } from "../../dao/interfaces/FollowDAO";
 import { AuthDAO } from "../../dao/interfaces/AuthDAO";
-// import { FollowEntity } from "tweeter-shared/src/model/dto/entity/FollowEntity";
 import { FollowerEntity } from "tweeter-shared";
-// import { DataPage } from "tweeter-shared/src/model/dto/entity/DataPage";
+import { UserDAO } from "../../dao/interfaces/UserDAO";
 
 export class FollowService {
 	followFactory = new FollowFactory();
-	// followerDAO: FollowDAO;
-	// followeeDAO: FollowDAO;
 	followDAO: FollowDAO;
 	authDAO: AuthDAO;
+	userDAO: UserDAO;
 
 	constructor() {
-		// this.followerDAO = this.followFactory.createFollowerDAO();
-		// this.followeeDAO = this.followFactory.createFolloweeDAO();
 		this.followDAO = this.followFactory.createFollowDAO();
 		this.authDAO = this.followFactory.createAuthDAO();
+		this.userDAO = this.followFactory.createUserDAO();
 	}
 	public async loadMoreFollowers(
 		token: string,
@@ -25,7 +22,7 @@ export class FollowService {
 		pageSize: number,
 		lastItem: UserDto | null
 	  ): Promise<[UserDto[], boolean]> {
-		await this.checkToken(token);
+		// await this.checkToken(token);
 		return this.followDAO.getPageOfFollowers(userAlias, pageSize, lastItem?.alias);
 	  };
 
@@ -35,7 +32,7 @@ export class FollowService {
 		pageSize: number,
 		lastItem: UserDto | null
 	): Promise<[UserDto[], boolean]> {
-		// await this.checkToken(token);
+		await this.checkToken(token);
 		return this.followDAO.getPageOfFollowees(userAlias, pageSize, lastItem?.alias);
 	};
 
@@ -44,7 +41,7 @@ export class FollowService {
 		user: UserDto,
 		selectedUser: UserDto
 	): Promise<boolean> {
-		await this.checkToken(token);
+		// await this.checkToken(token);
 		const followerEntity: FollowerEntity = {
 			follower_handle: selectedUser.alias,
 			follower_name: selectedUser.firstName + " " + selectedUser.lastName,
@@ -59,7 +56,7 @@ export class FollowService {
 		token: string,
 		user: UserDto
 	): Promise<number> {
-		await this.checkToken(token);
+		// await this.checkToken(token);
 		return this.followDAO.getFolloweesCount(user.alias);
 	};
 
@@ -67,7 +64,7 @@ export class FollowService {
 		token: string,
 		user: UserDto
 	): Promise<number> {
-		await this.checkToken(token);
+		// await this.checkToken(token);
 		return this.followDAO.getFollowersCount(user.alias);
 	};
 
@@ -75,7 +72,19 @@ export class FollowService {
 		token: string,
 		userToFollow: UserDto
 	): Promise<[followerCount: number, followeeCount: number]> {
-		const currentUserDto = await this.checkToken(token);
+		// await this.checkToken(token);
+		const currentUserAlias = await this.authDAO.getAliasFromToken(token);
+		if (!currentUserAlias) {
+			throw new Error("[ServerError]: Couldn't validate authentication token");
+		}
+
+		const currentUser = await this.userDAO.getUser(currentUserAlias);
+
+		if (!currentUser) {
+			throw new Error("[ServerError]: Couldn't get user information");
+		}
+
+		const currentUserDto = currentUser[0]
 
 		const followerEntity: FollowerEntity = {
 			follower_handle: currentUserDto.alias,
@@ -96,7 +105,19 @@ export class FollowService {
 		token: string,
 		userToUnfollow: UserDto
 	): Promise<[followerCount: number, followeeCount: number]> {
-		const currentUserDto = await this.checkToken(token);
+		// await this.checkToken(token);
+		const currentUserAlias = await this.authDAO.getAliasFromToken(token);
+		if (!currentUserAlias) {
+			throw new Error("[ServerError]: Couldn't validate authentication token");
+		}
+
+		const currentUser = await this.userDAO.getUser(currentUserAlias);
+
+		if (!currentUser) {
+			throw new Error("[ServerError]: Couldn't get user information");
+		}
+
+		const currentUserDto = currentUser[0]
 
 		const followerEntity: FollowerEntity = {
 			follower_handle: currentUserDto.alias,
@@ -113,14 +134,11 @@ export class FollowService {
 		return [followerCount, followeeCount];
 	};
 
-	private async checkToken(token: string): Promise<UserDto> {
-		const authToken = await this.authDAO.checkToken(token);
-		if (authToken === undefined) {
-			throw new Error("User not authorized");
-		} else if (Date.now() - authToken[0].timestamp > 900000) {
+	private async checkToken(token: string): Promise<void> {
+        const validToken = await this.authDAO.checkToken(token);
+        if (!validToken) {
 			this.authDAO.deleteToken(token);
-			throw new Error("Session timed out");
+			throw new Error("[BadRequest]: Session timed out");
 		}
-		return authToken[1]
-	}
+    }
 }
