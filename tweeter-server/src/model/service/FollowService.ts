@@ -32,6 +32,7 @@ export class FollowService {
 		pageSize: number,
 		lastItem: UserDto | null
 	): Promise<[UserDto[], boolean]> {
+		console.log("TOKEN BEFORE DAO CHECK", token);
 		await this.checkToken(token);
 		return this.followDAO.getPageOfFollowees(userAlias, pageSize, lastItem?.alias);
 	};
@@ -106,7 +107,9 @@ export class FollowService {
 		userToUnfollow: UserDto
 	): Promise<[followerCount: number, followeeCount: number]> {
 		// await this.checkToken(token);
+		console.log("TOKEN BEFORE UNFOLLOW::: ", token);
 		const currentUserAlias = await this.authDAO.getAliasFromToken(token);
+		console.log("ALIAS FOUND FROM TOKEN::: ", currentUserAlias);
 		if (!currentUserAlias) {
 			throw new Error("[ServerError]: Couldn't validate authentication token");
 		}
@@ -135,7 +138,9 @@ export class FollowService {
 	};
 
 	private async checkToken(token: string): Promise<void> {
+		console.log("TOKEN BEING CHECKED::: ", token);
         const validToken = await this.authDAO.checkToken(token);
+		console.log("RESULT OF CHECKING TOKEN::: ", validToken);
         if (!validToken) {
 			this.authDAO.deleteToken(token);
 			throw new Error("[BadRequest]: Session timed out");

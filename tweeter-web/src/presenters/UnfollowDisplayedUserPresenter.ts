@@ -20,7 +20,7 @@ export class UnfollowDisplayedUserPresenter  extends DisplayedUserPresenter {
 			this.view.setIsLoading(true);
 
 			const [followerCount, followeeCount] = await this.followService.unfollow(
-			authToken!,
+			authToken,
 			displayedUser!
 			);
 

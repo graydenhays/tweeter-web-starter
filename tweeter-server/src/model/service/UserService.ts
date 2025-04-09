@@ -1,4 +1,4 @@
-import { AuthToken, UserDto } from "tweeter-shared";
+import { AuthToken, AuthTokenDto, UserDto } from "tweeter-shared";
 import { UserDAO } from "../../dao/interfaces/UserDAO";
 import { UserFactory } from "../../dao/factories/UserFactory";
 import { AuthDAO } from "../../dao/interfaces/AuthDAO";
@@ -20,7 +20,7 @@ export class UserService {
 	public async login(
 		alias: string,
 		password: string
-	): Promise<[UserDto, AuthToken]> {
+	): Promise<[UserDto, AuthTokenDto]> {
 		let userDto: UserDto;
 
 		const userData = await this.userDAO.getUser(alias);
@@ -38,9 +38,11 @@ export class UserService {
 
 		// generate auth token
 		const authToken = AuthToken.Generate();
-		this.authDAO.putToken(authToken, userDto.alias);
+		console.log("AUTH TOKEN CLASS::: ", authToken);
+		console.log("AUTH TOKEN DTO::: ", authToken.dto);
+		this.authDAO.putToken(authToken.dto, userDto.alias);
 
-		return [userDto, authToken]
+		return [userDto, authToken.dto]
 	};
 
 	public async register(
@@ -50,7 +52,7 @@ export class UserService {
 		password: string,
 		imageStringBase64: string,
 		imageFileExtension: string
-	): Promise<[UserDto, AuthToken]> {
+	): Promise<[UserDto, AuthTokenDto]> {
 		if (
 			(firstName === "" || firstName === null)
 			|| (lastName === "" || lastName === null)
@@ -82,12 +84,12 @@ export class UserService {
 		// generate auth token
 		const authToken = AuthToken.Generate();
 		try {
-			this.authDAO.putToken(authToken, userDto.alias);
+			this.authDAO.putToken(authToken.dto, userDto.alias);
 		}
 		catch(e) {
 			console.log("Error from register::: ", e);
 		}
-		return [userDto, authToken]
+		return [userDto, authToken.dto]
 	};
 
 	public async getUser (

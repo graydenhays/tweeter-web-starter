@@ -8,7 +8,7 @@ import {
 	DynamoDBClient,
 } from "@aws-sdk/client-dynamodb";
 import { AuthDAO } from "./interfaces/AuthDAO";
-import { AuthTokenDto, UserDto } from "tweeter-shared";
+import { AuthTokenDto } from "tweeter-shared";
 
 export class AuthDynamoDBDAO implements AuthDAO {
 	readonly tableName = "sessions";
@@ -25,8 +25,15 @@ export class AuthDynamoDBDAO implements AuthDAO {
 				[this.authToken_attr]: token
 			}
 		};
-		const output = await this.client.send(new GetCommand(params));
-		return output.Item ? output.Item[this.user_alias_attr] : undefined
+		console.log("PARAMS FOR GETTING ALIAS::: ", params);
+		try {
+			const output = await this.client.send(new GetCommand(params));
+			console.log("RECEIVED ITEM::: ", output.Item);
+			return output.Item ? output.Item[this.user_alias_attr] : undefined
+		}
+		catch (e) {
+			console.log("ERROR THROWN::: ", e);
+		}
 	}
 
 	async putToken(authToken: AuthTokenDto, alias: string): Promise<void> {
@@ -38,7 +45,13 @@ export class AuthDynamoDBDAO implements AuthDAO {
 				[this.user_alias_attr]: alias
 			},
 		};
-		await this.client.send(new PutCommand(params));
+		console.log("PARAMS TO INSERT AUTH TOKEN::: ", params);
+		try {
+			await this.client.send(new PutCommand(params));
+		}
+		catch (e) {
+			console.log("WAS THERE AN ERROR??? ", e);
+		}
 	}
 	async checkToken(token: string): Promise<boolean> {
 		const params = {
@@ -49,7 +62,8 @@ export class AuthDynamoDBDAO implements AuthDAO {
 		};
 		console.log("TOKEN CHECK BEFORE:::: ", params);
 		const output = await this.client.send(new GetCommand(params));
-		console.log("TOKEN CHECK AFTER:::: ", output);
+		console.log("TOKEN CHECK AFTER:::: ", output.Item);
+		console.log("CHECKING TOKEN MATH::: ", output.Item ? Date.now() - output.Item![this.timestamp_attr] : "undefined");
 		return output.Item == undefined || output.Item[this.authToken_attr] == undefined
 			? false
 			: Date.now() - output.Item[this.timestamp_attr] < 900000 // check to see if token is timed out

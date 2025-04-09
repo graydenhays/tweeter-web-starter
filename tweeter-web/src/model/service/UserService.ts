@@ -10,7 +10,7 @@ export class UserService {
 		password: string
 	): Promise<[User, AuthToken]> {
 		const [userDto, authToken] = await this.facade.getAuth({
-			token: undefined,
+			token: "",
 			alias: alias,
 			password: password
 		}, "/login", "Unrecognized user");
@@ -29,7 +29,7 @@ export class UserService {
 		  Buffer.from(userImageBytes).toString("base64");
 
 		const [userDto, authToken] = await this.facade.getAuth({
-			token: undefined,
+			token: "",
 			alias: alias,
 			password: password,
 			firstName: firstName,

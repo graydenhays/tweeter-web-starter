@@ -1,9 +1,11 @@
+import { StatusDto } from "../StatusDto";
+
 export class PostEntity {
-	post: string;
+	post: StatusDto;
 	userAlias: string;
 	timestamp: number;
 
-	constructor(post: string, userAlias: string, timestamp: number) {
+	constructor(post: StatusDto, userAlias: string, timestamp: number) {
 		this.post = post;
 		this.userAlias = userAlias;
 		this.timestamp = timestamp;

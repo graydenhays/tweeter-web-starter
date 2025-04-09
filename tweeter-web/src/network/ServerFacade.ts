@@ -71,8 +71,11 @@ export class ServerFacade {
 		if (response.success) {
 			if (user == null) {
 				throw new Error(message);
-			} else {
-				return [user, response.authToken];
+			} else if (!(response.authToken)) {
+				throw new Error("[ServerError]: Could not retrieve authentication token");
+			}
+			else {
+				return [user, AuthToken.fromDto(response.authToken)!];
 			}
 		}
 		else {

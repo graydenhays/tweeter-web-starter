@@ -24,7 +24,7 @@ export class FollowerStatusPresenter extends Presenter<FollowerStatusView> {
 				this.view.setIsFollower(false);
 			} else {
 				this.view.setIsFollower(
-					await this.followService.getIsFollowerStatus(authToken!, currentUser!, displayedUser!)
+					await this.followService.getIsFollowerStatus(authToken, currentUser!, displayedUser!)
 				);
 			}
 		}, "determine follower status");

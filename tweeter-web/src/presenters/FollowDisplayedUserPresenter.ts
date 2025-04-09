@@ -20,7 +20,7 @@ export class FollowDisplayedUserPresenter extends DisplayedUserPresenter {
 			this.view.setIsLoading(true);
 
 			const [followerCount, followeeCount] = await this.followService.follow(
-				authToken!,
+				authToken,
 				displayedUser!
 			);
 

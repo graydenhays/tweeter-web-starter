@@ -4,7 +4,7 @@ import { UserService } from "../../model/service/UserService";
 export const handler = async (request: GetUserRequest): Promise<GetUserResponse> => {
 	const userService = new UserService();
 	const userDto = await userService.getUser(
-		request.token!,
+		request.token,
 		request.userAlias
 	);
 

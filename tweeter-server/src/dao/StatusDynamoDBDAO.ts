@@ -14,7 +14,7 @@ import { FollowDynamoDBDAO } from "./FollowDynamoDBDAO";
 export class StatusDynamoDBDAO implements StatusDAO {
 	tableName: string;
 	readonly user_handle_attr = "owner_handle";
-	readonly post_attr = "post";
+	readonly status_attr = "post";
 	readonly timestamp_attr = "timestamp";
 
 	readonly user_alias_attr = "user_handle";
@@ -60,7 +60,7 @@ export class StatusDynamoDBDAO implements StatusDAO {
 		data.Items?.forEach((item: any) => {
 			console.log(item);
 			const entity = new PostEntity(
-				item[this.post_attr],
+				item[this.status_attr],
 				item[this.user_handle_attr],
 				item[this.timestamp_attr],
 			);
@@ -107,13 +107,19 @@ export class StatusDynamoDBDAO implements StatusDAO {
 					console.log("POST:::: ", nextPost);
 					while (nextPost) {
 						postList.push({
-							post: nextPost.post,
+							post: nextPost.post.post,
 							user: {
-								firstName: item[this.user_firstName_attr],
-								lastName: item[this.user_lastName_attr],
-								alias: item[this.user_alias_attr],
-								imageUrl: item[this.user_imageUrl_attr]
+								firstName: nextPost.post.user.firstName,
+								lastName: nextPost.post.user.lastName,
+								alias: nextPost.post.user.alias,
+								imageUrl: nextPost.post.user.imageUrl
 							},
+							// user: {
+							// 	firstName: item[this.user_firstName_attr],
+							// 	lastName: item[this.user_lastName_attr],
+							// 	alias: item[this.user_alias_attr],
+							// 	imageUrl: item[this.user_imageUrl_attr]
+							// },
 							timestamp: nextPost.timestamp,
 						})
 						nextPost = itemsMap.get(item[this.user_alias_attr])?.pop();
@@ -144,7 +150,7 @@ export class StatusDynamoDBDAO implements StatusDAO {
 		const storyParams = {
 			TableName: 'story',
 			Item: {
-				[this.post_attr]: status.post, // make this a dto!!!!!!!!!!!!
+				[this.status_attr]: status, // make this a dto!!!!!!!!!!!!
 				[this.user_handle_attr]: status.user.alias,
 				[this.timestamp_attr]: status.timestamp,
 			},
@@ -165,14 +171,12 @@ export class StatusDynamoDBDAO implements StatusDAO {
 			const feedParams = {
 				TableName: 'feed',
 				Item: {
-					[this.post_attr]: status.post,
+					[this.status_attr]: status,
 					[this.user_handle_attr]: item['follower_handle'], // TODO:
 					[this.timestamp_attr]: status.timestamp,
 				},
 			};
 			await this.client.send(new PutCommand(feedParams));
 		});
-
-
 	}
 }

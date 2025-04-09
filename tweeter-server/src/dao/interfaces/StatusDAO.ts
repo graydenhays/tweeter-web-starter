@@ -3,7 +3,7 @@ import { TweeterDAO } from "./TweeterDAO";
 
 export interface StatusDAO extends TweeterDAO {
 	readonly user_handle_attr: string,
-	readonly post_attr: string,
+	readonly status_attr: string,
     readonly timestamp_attr: string,
 
 	loadMoreItems(
