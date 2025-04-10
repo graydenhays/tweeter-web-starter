@@ -9,12 +9,17 @@ export class UserService {
 		alias: string,
 		password: string
 	): Promise<[User, AuthToken]> {
-		const [userDto, authToken] = await this.facade.getAuth({
-			token: "",
-			alias: alias,
-			password: password
-		}, "/login", "Unrecognized user");
-		return [User.fromDto(userDto)!, authToken]
+		try {
+			const [userDto, authToken] = await this.facade.getAuth({
+				token: "",
+				alias: alias,
+				password: password
+			}, "/login", "Unrecognized user");
+			return [User.fromDto(userDto)!, authToken]
+		}
+		catch (e: any) {
+			throw new Error(e.message);
+		}
 	};
 
 	public async register(

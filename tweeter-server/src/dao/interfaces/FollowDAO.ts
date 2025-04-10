@@ -10,7 +10,7 @@ export interface FollowDAO extends TweeterDAO {
 	readonly followee_name_attr: string;
 
 	putFollower(follower: FollowerEntity): Promise<void>;
-	updateFollower(follower: FollowerEntity): Promise<void>;
+	// updateFollower(follower: FollowerEntity): Promise<void>;
 	getFollower(follower: FollowerEntity): Promise<FollowerEntity | undefined>;
 	deleteFollower(follower: FollowerEntity): Promise<void>;
 	getPageOfFollowees(

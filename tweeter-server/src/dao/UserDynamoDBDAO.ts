@@ -36,22 +36,22 @@ export class UserDynamoDBDAO implements UserDAO {
 		console.log("REGISTER PARAMS:::: ", params);
 		await this.client.send(new PutCommand(params));
 	}
-	async updateUser(user: UserDto): Promise<void> {
-		const params = {
-			TableName: this.tableName,
-			Key: {
-				[this.user_handle_attr]: user.alias
-			},
-			ExpressionAttributeValues: {
-				":newUserFirstName": user.firstName,
-				":newUserLastName": user.lastName
-			},
-			UpdateExpression:
-			  "SET " + this.user_firstName_attr + " = :newUserFirstName, "
-			  + this.user_lastName_attr + " = :newUserLastName"
-		};
-		await this.client.send(new UpdateCommand(params));
-	}
+	// async updateUser(user: UserDto): Promise<void> {
+	// 	const params = {
+	// 		TableName: this.tableName,
+	// 		Key: {
+	// 			[this.user_handle_attr]: user.alias
+	// 		},
+	// 		ExpressionAttributeValues: {
+	// 			":newUserFirstName": user.firstName,
+	// 			":newUserLastName": user.lastName
+	// 		},
+	// 		UpdateExpression:
+	// 		  "SET " + this.user_firstName_attr + " = :newUserFirstName, "
+	// 		  + this.user_lastName_attr + " = :newUserLastName"
+	// 	};
+	// 	await this.client.send(new UpdateCommand(params));
+	// }
 	async getUser(userAlias: string): Promise<[UserDto, string] | undefined> {
 		const params = {
 			TableName: this.tableName,

@@ -9,7 +9,7 @@ export interface UserDAO extends TweeterDAO {
 	readonly user_password_attr: string;
 
 	putUser(user: UserDto, password: string): Promise<void>;
-	updateUser(user: UserDto): Promise<void>;
+	// updateUser(user: UserDto): Promise<void>;
 	getUser(userAlias: string): Promise<[UserDto, string] | undefined>;
 	deleteUser(user: UserDto): Promise<void>;
 }

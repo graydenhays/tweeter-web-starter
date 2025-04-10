@@ -20,8 +20,6 @@ export class FollowDynamoDBDAO implements FollowDAO {
 	readonly follower_handle_attr = "follower_handle";
 	readonly followee_handle_attr = "followee_handle";
 
-	readonly follower_count_attr = "follower_count";
-	readonly followee_count_attr = "followee_count";
 	readonly follower_name_attr = "follower_name";
 	readonly followee_name_attr = "followee_name";
 
@@ -30,7 +28,6 @@ export class FollowDynamoDBDAO implements FollowDAO {
 	readonly user_lastName_attr = "user_lastName";
 	readonly user_imageUrl_attr = "user_imageUrl";
 	readonly user_password_attr = "user_password";
-
 
 	private readonly client = DynamoDBDocumentClient.from(new DynamoDBClient());
 
@@ -47,20 +44,20 @@ export class FollowDynamoDBDAO implements FollowDAO {
 		await this.client.send(new PutCommand(params));
 	}
 
-	async updateFollower(follower: FollowerEntity): Promise<void> {
-		const params = {
-		  TableName: this.tableName,
-		  Key: this.generateFollowerItem(follower),
-		  ExpressionAttributeValues: {
-			  ":newFollowerName": follower.follower_name,
-			  ":newFolloweeName": follower.followee_name
-		  },
-		  UpdateExpression:
-			"SET " + this.follower_name_attr + " = :newFollowerName, "
-			+ this.followee_name_attr + " = :newFolloweeName",
-		};
-		await this.client.send(new UpdateCommand(params));
-	}
+	// async updateFollower(follower: FollowerEntity): Promise<void> {
+	// 	const params = {
+	// 	  TableName: this.tableName,
+	// 	  Key: this.generateFollowerItem(follower),
+	// 	  ExpressionAttributeValues: {
+	// 		  ":newFollowerName": follower.follower_name,
+	// 		  ":newFolloweeName": follower.followee_name
+	// 	  },
+	// 	  UpdateExpression:
+	// 		"SET " + this.follower_name_attr + " = :newFollowerName, "
+	// 		+ this.followee_name_attr + " = :newFolloweeName",
+	// 	};
+	// 	await this.client.send(new UpdateCommand(params));
+	// }
 
 	async getFollower(follower: FollowerEntity): Promise<FollowerEntity | undefined> {
 		const params = {

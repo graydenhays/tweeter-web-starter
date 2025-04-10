@@ -33,7 +33,7 @@ export class FollowService {
 		lastItem: UserDto | null
 	): Promise<[UserDto[], boolean]> {
 		console.log("TOKEN BEFORE DAO CHECK", token);
-		await this.checkToken(token);
+		// await this.checkToken(token);
 		return this.followDAO.getPageOfFollowees(userAlias, pageSize, lastItem?.alias);
 	};
 

@@ -1,4 +1,3 @@
-import { PostSegmentDto } from "./PostSegmentDto";
 import { UserDto } from "./UserDto";
 
 export interface StatusDto {

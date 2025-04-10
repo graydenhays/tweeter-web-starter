@@ -56,15 +56,20 @@ const Register = () => {
 
   const doRegister = async () => {
     setIsLoading(true);
-    presenter.doRegister(
-      alias,
-      password,
-      rememberMe,
-      firstName,
-      lastName,
-      imageBytes,
-      imageFileExtension
-    );
+    try {
+      presenter.doRegister(
+        alias,
+        password,
+        rememberMe,
+        firstName,
+        lastName,
+        imageBytes,
+        imageFileExtension
+      );
+    }
+    catch (e: any) {
+      displayErrorMessage(e.message);
+    }
     setIsLoading(false);
   };
 

@@ -50,6 +50,8 @@ export class StatusDynamoDBDAO implements StatusDAO {
 					[this.timestamp_attr]: lastItem.timestamp
 				},
 		};
+
+
 		const data = await this.client.send(new QueryCommand(params));
 		console.log("STATUS POST DATA:::: ", data);
 
@@ -150,7 +152,7 @@ export class StatusDynamoDBDAO implements StatusDAO {
 		const storyParams = {
 			TableName: 'story',
 			Item: {
-				[this.status_attr]: status, // make this a dto!!!!!!!!!!!!
+				[this.status_attr]: status,
 				[this.user_handle_attr]: status.user.alias,
 				[this.timestamp_attr]: status.timestamp,
 			},

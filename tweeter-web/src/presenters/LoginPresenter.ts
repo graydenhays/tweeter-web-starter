@@ -12,11 +12,16 @@ export class LoginPresenter extends AuthPresenter<AuthView> {
 		rememberMe: boolean
 	) {
 		this.doFailureReportingOperation(async () => {
-			this.authenticate(() => this.userService.login(
-				alias,
-				password
-			), rememberMe, this.view);
-			this.authNavigate(originalUrl);
+			try {
+				this.authenticate(() => this.userService.login(
+					alias,
+					password
+				), rememberMe, this.view);
+				this.authNavigate(originalUrl);
+			}
+			catch (e: any) {
+				throw new Error(e.message);
+			}
 		}, "log user in");
 	};
 }

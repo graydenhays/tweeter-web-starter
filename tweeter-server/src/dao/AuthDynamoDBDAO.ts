@@ -28,11 +28,12 @@ export class AuthDynamoDBDAO implements AuthDAO {
 		console.log("PARAMS FOR GETTING ALIAS::: ", params);
 		try {
 			const output = await this.client.send(new GetCommand(params));
+			console.log("OUTPUT::: ", output);
 			console.log("RECEIVED ITEM::: ", output.Item);
 			return output.Item ? output.Item[this.user_alias_attr] : undefined
 		}
-		catch (e) {
-			console.log("ERROR THROWN::: ", e);
+		catch (e: any) {
+			console.log("ERROR THROWN::: ", e.message);
 		}
 	}
 
