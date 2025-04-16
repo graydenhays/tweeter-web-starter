@@ -1,4 +1,4 @@
-import { UserDto } from "tweeter-shared";
+import { StatusDto, UserDto } from "tweeter-shared";
 import { TweeterDAO } from "./TweeterDAO";
 import { FollowerEntity } from "tweeter-shared";
 
@@ -25,4 +25,5 @@ export interface FollowDAO extends TweeterDAO {
 	): Promise<[UserDto[], boolean]>;
 	getFollowersCount(followeeHandle: string): Promise<number>;
 	getFolloweesCount(followerHandle: string): Promise<number>;
+	getAllFollowers(status: StatusDto): Promise<Record<string, any>[] | undefined>;
 }

@@ -26,7 +26,7 @@ import { ClientCommunicator } from "./ClientCommunicator";
 export class ServerFacade {
 	private SERVER_URL = "https://sd17k1pxq7.execute-api.us-east-2.amazonaws.com/dev";
 
-	private clientCommunicator = new ClientCommunicator(this.SERVER_URL);
+	public clientCommunicator = new ClientCommunicator(this.SERVER_URL);
 
 	// UserService
 

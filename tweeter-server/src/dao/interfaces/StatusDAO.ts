@@ -1,4 +1,4 @@
-import { StatusDto } from "tweeter-shared";
+import { StatusDto, UserDto } from "tweeter-shared";
 import { TweeterDAO } from "./TweeterDAO";
 
 export interface StatusDAO extends TweeterDAO {
@@ -12,5 +12,9 @@ export interface StatusDAO extends TweeterDAO {
         lastItem: StatusDto | undefined | null,
 		statusType: string
     ): Promise<[StatusDto[], boolean]>;
-	putStatus(status: StatusDto): Promise<void>
+	putStatus(status: StatusDto): Promise<void>;
+	batchFeedUpdate(
+		followers: UserDto[],
+		status: StatusDto
+	): Promise<void>;
 }

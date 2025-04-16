@@ -11,7 +11,7 @@ import {
 	DynamoDBClient,
 } from "@aws-sdk/client-dynamodb";
 import { FollowDAO } from "./interfaces/FollowDAO";
-import { UserDto } from "tweeter-shared";
+import { StatusDto, UserDto } from "tweeter-shared";
 import { FollowerEntity } from "tweeter-shared";
 
 export class FollowDynamoDBDAO implements FollowDAO {
@@ -286,6 +286,31 @@ export class FollowDynamoDBDAO implements FollowDAO {
 
 		// return count;
 	}
+
+	async getAllFollowers(status: StatusDto) {
+		const followerParams = {
+			KeyConditionExpression: 'followee_handle' + " = :feh",
+			ExpressionAttributeValues: {
+				":feh": status.user.alias,
+			},
+			TableName: 'follows',
+			IndexName: 'follows_index',
+			// include exclusivestartkey?
+		}
+		return (await this.client.send(new QueryCommand(followerParams))).Items;
+		// followers.Items?.forEach(async (item) => {
+		// 	const feedParams = {
+		// 		TableName: 'feed',
+		// 		Item: {
+		// 			["post"]: status,
+		// 			["owner_handle"]: item['follower_handle'], // TODO:
+		// 			["timestamp"]: status.timestamp,
+		// 		},
+		// 	};
+		// 	await this.client.send(new PutCommand(feedParams));
+		// });
+	}
+
 
 	private generateFollowerItem(follower: FollowerEntity) {
 		return {

@@ -1,4 +1,4 @@
-import { UserDto } from "tweeter-shared";
+import { StatusDto, UserDto } from "tweeter-shared";
 import { FollowFactory } from "../../dao/factories/FollowFactory";
 import { FollowDAO } from "../../dao/interfaces/FollowDAO";
 import { AuthDAO } from "../../dao/interfaces/AuthDAO";
@@ -68,6 +68,12 @@ export class FollowService {
 		// await this.checkToken(token);
 		return this.followDAO.getFollowersCount(user.alias);
 	};
+
+	// public async getAllFollowers(
+	// 	status: StatusDto
+	// ) {
+	// 	return this.followDAO.getAllFollowers(status);
+	// }
 
 	public async follow(
 		token: string,

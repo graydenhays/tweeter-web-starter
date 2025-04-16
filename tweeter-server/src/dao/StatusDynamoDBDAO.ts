@@ -3,6 +3,7 @@ import {
 	DynamoDBDocumentClient,
 	PutCommand,
 	QueryCommand,
+	BatchWriteCommand
 } from "@aws-sdk/lib-dynamodb";
 import {
 	DynamoDBClient,
@@ -10,6 +11,7 @@ import {
 import { FollowerEntity, PostEntity, StatusDto, UserDto } from "tweeter-shared";
 import { StatusDAO } from "./interfaces/StatusDAO";
 import { FollowDynamoDBDAO } from "./FollowDynamoDBDAO";
+import { SendMessageCommand, SQSClient } from "@aws-sdk/client-sqs";
 
 export class StatusDynamoDBDAO implements StatusDAO {
 	tableName: string;
@@ -24,6 +26,8 @@ export class StatusDynamoDBDAO implements StatusDAO {
 	readonly user_password_attr = "user_password";
 
 	private readonly client = DynamoDBDocumentClient.from(new DynamoDBClient());
+	private readonly sqs = new SQSClient({ region: "us-east-2" });
+	private readonly postStatusQueueUrl = "https://sqs.us-east-2.amazonaws.com/664418969627/PostStatusQ";
 
 	constructor(tableName: string) {
 		this.tableName = tableName;
@@ -159,26 +163,65 @@ export class StatusDynamoDBDAO implements StatusDAO {
 		};
 		await this.client.send(new PutCommand(storyParams));
 		// query all followers and add to feed (batchget)
-		const followerParams = {
-			KeyConditionExpression: 'followee_handle' + " = :feh",
-			ExpressionAttributeValues: {
-				":feh": status.user.alias,
-			},
-			TableName: 'follows',
-			IndexName: 'follows_index',
-			// include exclusivestartkey?
-		}
-		const followers = await this.client.send(new QueryCommand(followerParams));
-		followers.Items?.forEach(async (item) => {
-			const feedParams = {
-				TableName: 'feed',
+		// const followerParams = {
+		// 	KeyConditionExpression: 'followee_handle' + " = :feh",
+		// 	ExpressionAttributeValues: {
+		// 		":feh": status.user.alias,
+		// 	},
+		// 	TableName: 'follows',
+		// 	IndexName: 'follows_index',
+		// 	// include exclusivestartkey?
+		// }
+		// const followers = await this.client.send(new QueryCommand(followerParams));
+		// followers.Items?.forEach(async (item) => {
+		// 	const feedParams = {
+		// 		TableName: 'feed',
+		// 		Item: {
+		// 			[this.status_attr]: status,
+		// 			[this.user_handle_attr]: item['follower_handle'], // TODO:
+		// 			[this.timestamp_attr]: status.timestamp,
+		// 		},
+		// 	};
+		// 	await this.client.send(new PutCommand(feedParams));
+		// });
+
+		// Do I need to do this for each follower?
+		const message = {
+			[this.status_attr]: status,
+			[this.user_handle_attr]: status.user.alias,
+			[this.timestamp_attr]: status.timestamp
+		};
+
+		await this.sqs.send(new SendMessageCommand({
+			DelaySeconds: 0,
+			MessageBody: JSON.stringify(message),
+			QueueUrl: this.postStatusQueueUrl
+		}))
+	}
+	async batchFeedUpdate(followers: UserDto[], status: StatusDto): Promise<void> {
+		const batchSize = 25;
+		const writeRequests = followers.map((item: any) => ({
+			PutRequest: {
 				Item: {
 					[this.status_attr]: status,
-					[this.user_handle_attr]: item['follower_handle'], // TODO:
+					[this.user_handle_attr]: item['alias'],
 					[this.timestamp_attr]: status.timestamp,
 				},
-			};
-			await this.client.send(new PutCommand(feedParams));
-		});
+			},
+		}));
+
+		for (let i = 0; i < writeRequests.length; i += batchSize) {
+			const startTimeMillis = new Date().getTime();
+			const batch = writeRequests.slice(i, i + batchSize);
+			await this.client.send(new BatchWriteCommand({
+				RequestItems: {
+					[this.tableName]: batch
+				}
+			}));
+			const elapsedTime = new Date().getTime() - startTimeMillis;
+			if (elapsedTime < 1000) {
+				await new Promise<void>((resolve) => setTimeout(resolve, 1000 - elapsedTime));
+			}
+		}
 	}
 }

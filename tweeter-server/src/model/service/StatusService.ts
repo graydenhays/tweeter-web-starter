@@ -1,4 +1,4 @@
-import { StatusDto } from "tweeter-shared";
+import { StatusDto, UserDto } from "tweeter-shared";
 import { StatusFactory } from "../../dao/factories/StatusFactory";
 import { StatusDAO } from "../../dao/interfaces/StatusDAO";
 import { AuthDAO } from "../../dao/interfaces/AuthDAO";
@@ -41,6 +41,13 @@ export class StatusService {
       ): Promise<void> {
         // await this.checkToken(token);
         await this.storyDAO.putStatus(newStatus);
+    };
+
+    public async batchFeedUpdate (
+        followers: UserDto[],
+        status: StatusDto
+    ): Promise<void> {
+        await this.feedDAO.batchFeedUpdate(followers, status);
     };
 
     private async checkToken(token: string): Promise<void> {
